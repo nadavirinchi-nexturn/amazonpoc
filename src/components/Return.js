@@ -55,6 +55,7 @@ const initialRows = [
     age: 25,
     joinDate: randomCreatedDate(),
     role: randomRole(),
+    serial: "4324325ew4355",
   },
   {
     id: randomId(),
@@ -62,6 +63,7 @@ const initialRows = [
     age: 36,
     joinDate: randomCreatedDate(),
     role: randomRole(),
+    serial: "432sdfser5ww445",
   },
   {
     id: randomId(),
@@ -69,6 +71,7 @@ const initialRows = [
     age: 19,
     joinDate: randomCreatedDate(),
     role: randomRole(),
+    serial: "5434wgdsgdskj90g",
   },
   {
     id: randomId(),
@@ -76,6 +79,7 @@ const initialRows = [
     age: 28,
     joinDate: randomCreatedDate(),
     role: randomRole(),
+    serial: "43489edfjdfksdf08djkg",
   },
   {
     id: randomId(),
@@ -83,6 +87,7 @@ const initialRows = [
     age: 23,
     joinDate: randomCreatedDate(),
     role: randomRole(),
+    serial: "kdsjk90o3keo9if",
   },
 ];
 
@@ -166,9 +171,32 @@ const Return = () => {
   };
 
   const columns = [
-    { field: "name", headerName: "Serial", width: 180, editable: true },
-    { field: "asset", headerName: "Asset", width: 180, editable: true },
-    { field: "comment", headerName: "Comments", width: 180, editable: true },
+    {
+      field: "serial",
+      headerName: "Serial",
+      width: 340,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "asset",
+      headerName: "Asset",
+      headerAlign: "center",
+      width: 300,
+      fullWidth: true,
+      editable: true,
+      align: "center",
+    },
+    {
+      field: "comment",
+      headerName: "Comments",
+      width: 320,
+      fullWidth: true,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
     // {
     //   field: "age",
     //   headerName: "Age",
@@ -197,7 +225,8 @@ const Return = () => {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 100,
+      // width: 100,
+      fullWidth: true,
       cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -512,14 +541,14 @@ const Return = () => {
               id="comment-txtfield"
               label="Comment"
               variant="outlined"
-              InputLabelProps={{ style: { color: "black" } }}
+              // InputLabelProps={{ style: { color: "black" } }}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "#F9A500",
+                    // borderColor: "#F9A500",
                   },
                 },
                 "&.Mui-focused .MuiOutlinedInput-root": {
@@ -634,25 +663,43 @@ const Return = () => {
           </Grid>
 
           <Grid item xs={3}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-ship-method">
-                Shipping Method *
-              </InputLabel>
-
-              <Select
-                labelId="demo-simple-select-ship-method"
-                id="demo-simple-select-ship-method"
-                // value={"10"}
-                label="Shipping Method *"
-                InputLabelProps={{ shrink: true }}
-                // onChange={handleChange}
-                required={true}
-              >
-                <MenuItem value={10}>Free text</MenuItem>
-                <MenuItem value={20}>Free text</MenuItem>
-                <MenuItem value={30}>Free text</MenuItem>
-              </Select>
-            </FormControl>
+            <Autocomplete
+              id="free-solo-ship-method"
+              labelId="From-autoComplete-shipmethod"
+              freeSolo
+              sx={{
+                // width: "360px",
+                backgroundColor: "#ffffff",
+                borderRadius: "5px",
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  // borderColor: "#F9A500",
+                },
+                "&.Mui-focused .MuiOutlinedInput-root": {
+                  paddingRight: "10px!important",
+                },
+              }}
+              options={top100Films.map((option) => option.title)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  InputProps={{
+                    ...params.InputProps,
+                    // startAdornment: (
+                    //   <InputAdornment position="start">
+                    //     {" "}
+                    //     <SearchIcon />
+                    //   </InputAdornment>
+                    // ),
+                    disableUnderline: true,
+                  }}
+                  required={true}
+                  // InputLabelProps={{ style: { color: "black" } }}
+                  // label="From"
+                  label="Shipping Method"
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={3}>
             <TextField
@@ -660,14 +707,14 @@ const Return = () => {
               label="Tracking *"
               variant="outlined"
               //   required={true}
-              InputLabelProps={{ style: { color: "black" } }}
+              // InputLabelProps={{ style: { color: "black" } }}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "#F9A500",
+                    // borderColor: "#F9A500",
                   },
                 },
                 "&.Mui-focused .MuiOutlinedInput-root": {
@@ -711,7 +758,7 @@ const Return = () => {
                 borderRadius: "5px",
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "#F9A500",
+                    // borderColor: "#F9A500",
                   },
                 },
                 "&.Mui-focused .MuiOutlinedInput-root": {
@@ -733,7 +780,7 @@ const Return = () => {
                 borderRadius: "5px",
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "#F9A500",
+                    // borderColor: "#F9A500",
                   },
                 },
                 "&.Mui-focused .MuiOutlinedInput-root": {
@@ -755,17 +802,17 @@ const Return = () => {
         }}
       >
         <Grid container p={5} direction="row" columnSpacing={2} rowSpacing={2}>
-          <Grid item xs={10}>
+          <Grid item xs={12}>
             <Typography> Line Details</Typography>
             <Divider sx={{ paddingTop: "10px" }} />
           </Grid>
-          <Grid item xs={2}></Grid>
         </Grid>
         {/* <EditToolbar /> */}
         <DataGrid
           sx={{
             marginLeft: "40px",
             marginRight: "40px",
+            marginBottom: "10px",
           }}
           rows={rows}
           columns={columns}
@@ -774,6 +821,9 @@ const Return = () => {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
+          disableRowSelectionOnClick={true}
+          hideFooterSelectedRowCount
+          hideFooterPagination
           slots={{
             toolbar: EditToolbar,
           }}
@@ -781,6 +831,42 @@ const Return = () => {
             toolbar: { setRows, setRowModesModel },
           }}
         />
+      </Box>
+      {/* sx={{ marginRight: "0px", marginLeft: "auto" }} */}
+      <Box
+        m={2}
+        p={2}
+        display="flex"
+        sx={{ backgroundColor: "#ffffff" }}
+        justifyContent={"flex-end"}
+        alignItems={"flex-end"}
+      >
+        <Button
+          sx={{
+            marginRight: "15px",
+            backgroundColor: "#E8EFFD",
+            color: "#4747A1",
+          }}
+          variant="contained"
+        >
+          Cancel
+        </Button>
+        <Button
+          sx={{ marginLeft: "15px", border: "1px solid black", color: "black" }}
+          variant="outlined"
+        >
+          Save Draft
+        </Button>
+        <Button
+          sx={{
+            marginLeft: "25px",
+            backgroundColor: "#F9A500",
+            borderRadius: "5px",
+            color: "black",
+          }}
+        >
+          Submit
+        </Button>
       </Box>
     </Box>
   );

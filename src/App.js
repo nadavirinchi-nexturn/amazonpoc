@@ -16,8 +16,8 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<SignIn />} />
-          <Route path="/returnRequest" element={<Return />} />
-          <Route path="/listReturn" element={<ListReturnProducts />} />
+          <Route path="/create" element={<Return />} />
+          <Route path="/list" element={<ListReturnProducts />} />
         </Routes>
       </div>
     </BrowserRouter>

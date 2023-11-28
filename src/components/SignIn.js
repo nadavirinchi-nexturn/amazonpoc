@@ -10,7 +10,7 @@ const SignIn = () => {
 
   const handleSignInBtn = () => {
     console.log("user name is ", userName);
-    navigate("/listReturn");
+    navigate("/list");
   };
 
   return (
