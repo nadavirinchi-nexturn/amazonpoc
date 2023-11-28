@@ -1,4 +1,4 @@
-const { from_site_query, ship_from_address_query, shipment_method_query, get_operating_unit_query } = require('./queries')
+const { from_site_query, ship_from_address_query, get_reponsibility_name_query, shipment_method_query, get_operating_unit_query } = require('./queries')
 const express = require('express')
 const bodyParser = require('body-parser')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
@@ -38,9 +38,11 @@ app.use(connectDB);
 app.post('/amazonpoc/returns/getOperatingUnitNumber', async (req, res) => {
   const username = req.body.username
   const getOperatingUnitNumberQuery = get_operating_unit_query(username)
+  const getResponsibilityNameQuery = get_reponsibility_name_query(username)
   try{
-    let data = await req.dbConnection.execute(getOperatingUnitNumberQuery)
-    res.status(200).json({ data: data.rows[0][3] })
+    let oun_data = await req.dbConnection.execute(getOperatingUnitNumberQuery)
+    let responsibility_name = await req.dbConnection.execute(getResponsibilityNameQuery)
+    res.status(200).json({ op_unit_number: oun_data.rows[0][3], responsibility: responsibility_name.rows[0][1] })
     await req.dbConnection.close()
   }catch(err){
     console.log('error', err)
@@ -57,27 +59,34 @@ app.post('/amazonpoc/returns/fromSite', async (req, res) => {
     await req.dbConnection.close()
   }catch(err){
     console.log('error', err)
-    res.status(400).json({ data: err })
+    res.status(400).json({ msg: 'post call failed!', error: err })
   }
 })
 
 app.post('/amazonpoc/returns/shipFromAddress', async function(req, res) {
-  let concat_string = `'%${req.body.search_string}%'`
-  let query_string = ship_from_address_query + concat_string
+  let org_id = req.body.org_id
+  let api_query = ship_from_address_query + org_id
   try{
-    let connection = await oracledb.getConnection({
-      user: "apps",
-      password: "devapps",
-      connectString: "ec2-52-2-62-212.compute-1.amazonaws.com:1521/ebs_DEV",
-    });
-    let data = await connection.execute(from_site_query)
-    res.json({ success: 'get call succeed!', rows: data.rows.length });
-    connection.close()
+    let data = await req.dbConnection.execute(api_query)
+    res.json({ success: 'get call succeed!', data: data });
+    await req.dbConnection.close()
   }catch(err){
     console.log('error', err)
-    res.json({ error: 'get call failed!', data: err });
+    res.json({ msg: 'get call failed!', error: err });
   }
 });
+
+app.get('/amazonpoc/returns/shippingMethod', async (req, res) => {
+  const api_query = shipment_method_query(req.body.org_id)
+  try{
+    let data = await req.dbConnection.execute(api_query)
+    res.status(200).json({ data: data })
+    await req.dbConnection.close()
+  }catch(err){
+    console.log('error', err)
+    res.status(400).json({ data: err })
+  }
+})
 
 
 app.listen(3000, function() {

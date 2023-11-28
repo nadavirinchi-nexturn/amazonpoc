@@ -59,6 +59,26 @@ GROUP BY
     usr.email_address`
 }
 
+module.exports.get_reponsibility_name_query = (username) => {
+    return `SELECT fu.user_name "User Name",
+    frt.responsibility_name "Responsibility Name"
+    FROM fnd_user_resp_groups_direct  furg,
+        applsys.fnd_user              fu,
+        applsys.fnd_responsibility_tl frt,
+        applsys.fnd_responsibility    fr,
+        applsys.fnd_application_tl    fat,
+        applsys.fnd_application       fa
+    WHERE furg.user_id           =  fu.user_id
+    AND furg.responsibility_id   =  frt.responsibility_id
+    AND fr.responsibility_id     =  frt.responsibility_id
+    AND fa.application_id        =  fat.application_id
+    AND fr.application_id        =  fat.application_id
+    AND frt.language             =  USERENV('LANG')
+    AND UPPER(fu.user_name)      =  UPPER('${username}')
+    and  frt.responsibility_name =  'US - A2Z OTS One Stop Shop'
+    AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))`
+}
+
 module.exports.from_site_query = `SELECT
 mp.organization_code,
 ood.name              organization_name,
@@ -93,25 +113,26 @@ org_organization_definitions ood
 WHERE
 hl.inventory_organization_id = ood.organization_id
 AND sysdate BETWEEN hl.creation_date AND nvl(hl.inactive_date, sysdate + 1)
-AND ood.organization_id = 390`
+AND ood.organization_id = `
 
-module.exports.shipment_method_query = `SELECT DISTINCT
-flvv.description description,
-flvv.lookup_code lookup_code,
-woc.organization_id org_id
-FROM
-wsh_carrier_services wcs,
-wsh_org_carrier_services_v woc,
-wsh_carriers_v wc,
-fnd_lookup_values_vl flvv
-WHERE
+module.exports.shipment_method_query = (org_id) => {
+    return `SELECT DISTINCT
+    flvv.description description,
+    FROM
+    wsh_carrier_services wcs,
+    wsh_org_carrier_services_v woc,
+    wsh_carriers_v wc,
+    fnd_lookup_values_vl flvv
+    WHERE
     wcs.carrier_service_id = woc.carrier_service_id
-AND wc.carrier_id = wcs.carrier_id
-AND flvv.lookup_type = 'SHIP_METHOD'
-AND flvv.lookup_code = wcs.ship_method_code
-AND flvv.enabled_flag = 'Y'
-AND woc.enabled_flag = 'Y'
-AND wcs.enabled_flag = 'Y'
-AND wc.active = 'A'
-AND sysdate BETWEEN nvl(flvv.start_date_active, sysdate - 1) 
-AND nvl(flvv.end_date_active, sysdate + 1)`
+    AND wc.carrier_id = wcs.carrier_id
+    AND woc.organization_id = ${org_id}
+    AND flvv.lookup_type = 'SHIP_METHOD'
+    AND flvv.lookup_code = wcs.ship_method_code
+    AND flvv.enabled_flag = 'Y'
+    AND woc.enabled_flag = 'Y'
+    AND wcs.enabled_flag = 'Y'
+    AND wc.active = 'A'
+    AND sysdate BETWEEN nvl(flvv.start_date_active, sysdate - 1) 
+    AND nvl(flvv.end_date_active, sysdate + 1)`
+}
