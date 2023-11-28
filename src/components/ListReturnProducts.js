@@ -1,8 +1,15 @@
 import React from "react";
 
 import { Box, Typography, Button, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const ListReturnProducts = () => {
+  const navigate = useNavigate();
+
+  const handleNewReques = () => {
+    navigate("/create");
+  };
+
   return (
     <Box
       m="auto"
@@ -18,7 +25,7 @@ const ListReturnProducts = () => {
           variant="contained"
           sx={{ marginTop: "30px" }}
           fullWidth
-          //   onClick={handleSignInBtn}
+          onClick={handleNewReques}
         >
           + New Request
         </Button>
