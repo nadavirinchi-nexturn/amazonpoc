@@ -1,17 +1,26 @@
-import React from 'react';
+import "./App.css";
+import { Box } from "@mui/material";
+import React from "react";
+// import "./components/styles/app.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Return from "./components/Return";
+import SignIn from "./components/SignIn";
+import ListReturnProducts from "./components/ListReturnProducts";
 
 function App() {
   return (
-    <div style={{ textAlign: 'center' }}>
-      <header>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    // <Box sx={{ width: "100vw", height: "100vh" }}>
+    //   hi
+    // </Box>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<SignIn />} />
+          <Route path="/returnRequest" element={<Return />} />
+          <Route path="/listReturn" element={<ListReturnProducts />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  padding: 0;
+  /* height: 100%;
+  width: 100%; */
+  font-family: GilroyLight;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f7f8fa;
+  overflow-x: hidden;
+  /* overflow-y: hidden; */
+  /* background-color: yellowgreen; */
+}
+
+@font-face {
+  font-family: GilroyLight;
+  src: url(../public/fonts/Radomir\ Tinkov\ -\ Gilroy-Light.otf);
+}

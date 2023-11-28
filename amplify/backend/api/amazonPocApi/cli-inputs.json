@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/amazonpoc/returns": {
+      "name": "/amazonpoc/returns",
+      "lambdaFunction": "returnsHandler",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}
