@@ -87,38 +87,46 @@ const Return = (props) => {
   const [shipFromAddresses, setShipFromAddresses] = React.useState([]);
   const [shipFromAddressValue, setShipFromAddresseValue] = React.useState("");
   const [toRad, setToRad] = React.useState("");
+  const [toRadID, setToRadID] = React.useState("");
   const [shipTo, setShipTo] = React.useState("");
+  const [shipToID, setShipToID] = React.useState("");
 
   const [typeValue, setTypeValue] = React.useState("return");
   const [reasonValue, setReasonValue] = React.useState("");
 
-  const [commentValue, setCommentValue] = React.useState('')
-  const [returnReqValue, setReturnReqValue] = React.useState('')
-  const [createdBy, setCreatedBy] = React.useState(props.userName.toUpperCase())
-  const [creationDate, setCreationDate] = React.useState(moment(Date.now()).format('DD_MMM_YYYY'))
+  const [commentValue, setCommentValue] = React.useState("");
+  const [returnReqValue, setReturnReqValue] = React.useState("");
+  const [createdBy, setCreatedBy] = React.useState(
+    props.userName.toUpperCase()
+  );
+  const [creationDate, setCreationDate] = React.useState(
+    moment(Date.now()).format("DD_MMM_YYYY")
+  );
 
-  const [shipmentMethods, setShipmentMethods] = React.useState([])
-  const [shippingMethod, setShippingMethod] = React.useState('')
-  const [tracking, setTracking] = React.useState('')
-  const [phoneNumber, setPhoneNumber] = React.useState('')
-  const [shippingEmail, setShippingEmail] = React.useState('')
+  const [shipmentMethods, setShipmentMethods] = React.useState([]);
+  const [shippingMethod, setShippingMethod] = React.useState("");
+  const [tracking, setTracking] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [shippingEmail, setShippingEmail] = React.useState("");
 
-  const handleonCLickSubmit = () => {}
-  const handleOnCLickCancel = () => {}
+  const handleonCLickSubmit = () => {};
+  const handleOnCLickCancel = () => {};
   const handleOnClickSave = () => {
-    console.log('fromSiteValue', fromSiteValue)
-    console.log('shipFromAddressValue', shipFromAddressValue)
-    console.log('toRad', toRad)
-    console.log('shipTo', shipTo)
-    console.log('reasonValue', reasonValue)
-    console.log('commentValue', commentValue)
-    console.log('createdBy', createdBy)
-    console.log('creationDate', creationDate)
-    console.log('shippingMethod', shippingMethod)
-    console.log('tracking', tracking)
-    console.log('phoneNumber', phoneNumber)
-    console.log('shippingEmail', shippingEmail)
-  }
+    console.log("fromSiteValue", fromSiteValue);
+    console.log("shipFromAddressValue", shipFromAddressValue);
+    console.log("toRad", toRad);
+    console.log("shipTo", shipTo);
+    console.log("toRADID", toRadID);
+    console.log("shipToID", shipToID);
+    console.log("reasonValue", reasonValue);
+    console.log("commentValue", commentValue);
+    console.log("createdBy", createdBy);
+    console.log("creationDate", creationDate);
+    console.log("shippingMethod", shippingMethod);
+    console.log("tracking", tracking);
+    console.log("phoneNumber", phoneNumber);
+    console.log("shippingEmail", shippingEmail);
+  };
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -273,7 +281,9 @@ const Return = (props) => {
           console.log(response);
           setShipFromAddresses(response.data.addresses);
           setShipTo(response.data.shipTo);
+          setShipToID(response.data.shipToID);
           setToRad(response.data.toRad);
+          setToRadID(response.data.toRadId);
           setShipmentMethods(response.data.shipping_methods);
         })
         .catch((err) => {
@@ -381,6 +391,9 @@ const Return = (props) => {
                 },
               }}
               options={shipFromAddresses}
+              getOptionLabel={(shipFromAddresses) =>
+                shipFromAddresses.ship_from_org_value
+              }
               value={shipFromAddressValue}
               onChange={(event, newValue) => {
                 setShipFromAddresseValue(newValue);
@@ -598,11 +611,7 @@ const Return = (props) => {
               }}
               variant="standard"
               label="Creation Date"
-<<<<<<< HEAD
               value={creationDate}
-=======
-              value={moment(Date.now()).format("DD-MMM-YYYY")}
->>>>>>> 9c23da09ff8bfc5c14dbdaec469fb2d1e8974440
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -791,19 +800,20 @@ const Return = (props) => {
             backgroundColor: "#E8EFFD",
             color: "#4747A1",
             "&:hover": {
-              backgroundColor: '#E8EFFD'
-            }
+              backgroundColor: "#E8EFFD",
+            },
           }}
           variant="contained"
           onClick={handleOnCLickCancel}
         >
           Cancel
         </Button>
-        <Button sx={{ 
-          marginLeft: "15px", 
-          border: "1px solid black", 
-          color: "black" 
-        }}
+        <Button
+          sx={{
+            marginLeft: "15px",
+            border: "1px solid black",
+            color: "black",
+          }}
           variant="outlined"
           onClick={handleOnClickSave}
         >
@@ -816,8 +826,8 @@ const Return = (props) => {
             borderRadius: "5px",
             color: "black",
             "&:hover": {
-              backgroundColor: '#F9A500'
-            }
+              backgroundColor: "#F9A500",
+            },
           }}
           onClick={handleonCLickSubmit}
         >

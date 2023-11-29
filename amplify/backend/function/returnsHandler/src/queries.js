@@ -1,5 +1,5 @@
 module.exports.get_operating_unit_query = (username) => {
-    return `SELECT DISTINCT
+  return `SELECT DISTINCT
     usr.user_id,
     usr.user_name,
     ppf.full_name,
@@ -56,11 +56,11 @@ GROUP BY
     usr.user_id,
     usr.user_name,
     ppf.full_name,
-    usr.email_address`
-}
+    usr.email_address`;
+};
 
 module.exports.get_reponsibility_name_query = (username) => {
-    return `SELECT fu.user_name "User Name",
+  return `SELECT fu.user_name "User Name",
     frt.responsibility_name "Responsibility Name"
     FROM fnd_user_resp_groups_direct  furg,
         applsys.fnd_user              fu,
@@ -76,11 +76,11 @@ module.exports.get_reponsibility_name_query = (username) => {
     AND frt.language             =  USERENV('LANG')
     AND UPPER(fu.user_name)      =  UPPER('${username}')
     and  frt.responsibility_name =  'US - A2Z OTS One Stop Shop'
-    AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))`
-}
+    AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))`;
+};
 
 module.exports.from_site_query = (operatingUnitNumber, search_string) => {
-    return `SELECT
+  return `SELECT
         mp.organization_code,
         ood.name              organization_name,
         mp.organization_id  
@@ -98,11 +98,11 @@ module.exports.from_site_query = (operatingUnitNumber, search_string) => {
         AND mp.attribute3 <> 'RAD' 
         AND hl.ATTRIBUTE4 = 'Yes' 
         AND (UPPER(mp.organization_code) like '%${search_string}%' or UPPER(ood.name)  like '%${search_string}%')
-        AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id) order by 1`
-}
+        AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id) order by 1`;
+};
 
 module.exports.ship_from_address_query = (org_id) => {
-    return `SELECT
+  return `SELECT
     hl.location_code AS organization_name,
     hl.location_id,
     address_line_1
@@ -122,11 +122,11 @@ module.exports.ship_from_address_query = (org_id) => {
     WHERE
     hl.inventory_organization_id = ood.organization_id
     AND sysdate BETWEEN hl.creation_date AND nvl(hl.inactive_date, sysdate + 1)
-    AND ood.organization_id = ${org_id}`
-}
+    AND ood.organization_id = ${org_id}`;
+};
 
 module.exports.to_rad_ship_to_query = (operatingUnitNumber, org_name) => {
-    return `SELECT
+  return `SELECT
     rad.organization_code rad_org_code,
         rad.organization_id   rad_org_id,
         rad.organization_name rad_org_name,
@@ -157,11 +157,11 @@ module.exports.to_rad_ship_to_query = (operatingUnitNumber, org_name) => {
         AND hl.ATTRIBUTE4 = 'Yes' 
         AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id)
         AND rad.operating_unit = ${operatingUnitNumber}
-        AND (ood.name='${org_name}')`
-} 
+        AND (ood.name='${org_name}')`;
+};
 
 module.exports.shipment_method_query = (org_id) => {
-    return `SELECT DISTINCT
+  return `SELECT DISTINCT
     flvv.description description
     FROM
     wsh_carrier_services wcs,
@@ -179,5 +179,83 @@ module.exports.shipment_method_query = (org_id) => {
     AND wcs.enabled_flag = 'Y'
     AND wc.active = 'A'
     AND sysdate BETWEEN nvl(flvv.start_date_active, sysdate - 1) 
-    AND nvl(flvv.end_date_active, sysdate + 1)`
-}
+    AND nvl(flvv.end_date_active, sysdate + 1)`;
+};
+
+module.exports.insert_into_returns_headers_query = (
+  from_site_org_value,
+  from_site_org_id,
+  ship_from_org_value,
+  ship_from_org_id,
+  toRad,
+  shipTo,
+  toRADID,
+  shipToID,
+  reasonValue,
+  commentValue,
+  createdBy,
+  creationDate,
+  shippingMethod,
+  tracking,
+  phoneNumber,
+  shippingEmail
+) => {
+  return `INSERT INTO xxicx_returns_headers 
+    (    return_header_id,
+        from_org_name, 				
+        from_org,      				
+        ship_from_address,			
+        SHIP_FROM_ADDRESS_DET,		
+        to_org,						
+        TO_ORG_NAME,				
+        ship_to_address,			
+        SHIP_TO_ADDRESS_DET,		
+        type,						
+        reason_code,				
+        comments,					
+        status,						
+        rma_reqnum,					
+        last_update_date,			
+        last_updated_by,			
+        last_update_login,			
+        creation_date,				
+        created_by,					
+        rma_created_by,				
+        severity,					
+        shipping_method,			
+        is_return,					
+        shipment_type,				
+        shipping_method_desc,		
+        requestor_phone_number,		
+        email_address				
+    ) VALUES
+    (
+      xxicx.xxicx_return_header_id_s.nextval,--26431(doubt),
+        '${from_site_org_value}',
+        '${from_site_org_id}',
+        '${ship_from_org_id}',
+        '${ship_from_org_value}',
+        '${toRADID}',
+        '${toRad}',
+        '${shipToID}',
+        '${shipTo}',
+        'Return'(doubt),
+        '${reasonValue}',
+        '${commentValue}',
+        'Draft(doubt)',
+        xxicx.xxicx_return_header_id_s.CURRVAL(doubt),
+        sysdate,
+        2806337,
+        2790585,
+        sysdate,
+        '${creationDate}',
+        '${createdBy}',
+        'SEV-4',
+        '${shippingMethod}',
+        '2103',
+        'Parcel',
+        'DHL Global Forwarding-Broker',
+        '${phoneNumber}',
+        '${shippingEmail}'
+    )`;
+};
