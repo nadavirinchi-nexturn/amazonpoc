@@ -46,60 +46,15 @@ import {
 import axios from "axios";
 import moment from "moment/moment";
 
-const roles = ["Market", "Finance", "Development"];
-const randomRole = () => {
-  return randomArrayItem(roles);
-};
-
-const initialRows = [
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    age: 25,
-    joinDate: randomCreatedDate(),
-    role: randomRole(),
-    serial: "4324325ew4355",
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    age: 36,
-    joinDate: randomCreatedDate(),
-    role: randomRole(),
-    serial: "432sdfser5ww445",
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    age: 19,
-    joinDate: randomCreatedDate(),
-    role: randomRole(),
-    serial: "5434wgdsgdskj90g",
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    age: 28,
-    joinDate: randomCreatedDate(),
-    role: randomRole(),
-    serial: "43489edfjdfksdf08djkg",
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    age: 23,
-    joinDate: randomCreatedDate(),
-    role: randomRole(),
-    serial: "kdsjk90o3keo9if",
-  },
-];
-
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
     const id = randomId();
-    setRows((oldRows) => [{ id, name: "", age: "", isNew: true }, ...oldRows]);
+    setRows((oldRows) => [
+      { id, serial: "", comment: "", asset: "", isNew: true },
+      ...oldRows,
+    ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
@@ -116,32 +71,34 @@ function EditToolbar(props) {
 }
 
 const Return = (props) => {
-
-  const [rows, setRows] = React.useState(initialRows);
+  const [rows, setRows] = React.useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
 
-  const [shipFromSite, setShipFromSite] = React.useState([])
-  const [fromSiteValue, setFromSiteValue] = React.useState({ org_value: '', org_id: '' })
-  const [fromSiteTextValue, setFromSiteTextValue] = React.useState('')
+  const [shipFromSite, setShipFromSite] = React.useState([]);
+  const [fromSiteValue, setFromSiteValue] = React.useState({
+    org_value: "",
+    org_id: "",
+  });
+  const [fromSiteTextValue, setFromSiteTextValue] = React.useState("");
 
-  const [orgId, setOrgId] = React.useState('')
-  const [orgValue, setOrgValue] = React.useState('')
+  const [orgId, setOrgId] = React.useState("");
+  const [orgValue, setOrgValue] = React.useState("");
 
-  const [shipFromAddresses, setShipFromAddresses] = React.useState([])
-  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState('')
-  const [toRad, setToRad] = React.useState('')
-  const [shipTo, setShipTo] = React.useState('')
+  const [shipFromAddresses, setShipFromAddresses] = React.useState([]);
+  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState("");
+  const [toRad, setToRad] = React.useState("");
+  const [shipTo, setShipTo] = React.useState("");
 
-  const [typeValue, setTypeValue] = React.useState('return')
-  const [reasonValue, setReasonValue] = React.useState('')
+  const [typeValue, setTypeValue] = React.useState("return");
+  const [reasonValue, setReasonValue] = React.useState("");
 
-  const [commentValue, setCommentValue] = React.useState('')
-  const [returnReqValue, setReturnReqValue] = React.useState('')
+  const [commentValue, setCommentValue] = React.useState("");
+  const [returnReqValue, setReturnReqValue] = React.useState("");
 
-  const [shipmentMethods, setShipmentMethods] = React.useState([])
-  const [tracking, setTracking] = React.useState('')
-  const [phoneNumber, setPhoneNumber] = React.useState('')
-  const [shippingEmail, setShippingEmail] = React.useState('')
+  const [shipmentMethods, setShipmentMethods] = React.useState([]);
+  const [tracking, setTracking] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [shippingEmail, setShippingEmail] = React.useState("");
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -189,17 +146,17 @@ const Return = (props) => {
       headerName: "Serial",
       width: 340,
       editable: true,
-      align: "center",
-      headerAlign: "center",
+      // align: "center",
+      // headerAlign: "center",
     },
     {
       field: "asset",
       headerName: "Asset",
-      headerAlign: "center",
+      // headerAlign: "center",
       width: 300,
       fullWidth: true,
       editable: true,
-      align: "center",
+      // align: "center",
     },
     {
       field: "comment",
@@ -207,39 +164,15 @@ const Return = (props) => {
       width: 320,
       fullWidth: true,
       editable: true,
-      align: "center",
-      headerAlign: "center",
+      // align: "center",
+      // headerAlign: "center",
     },
-    // {
-    //   field: "age",
-    //   headerName: "Age",
-    //   type: "number",
-    //   width: 80,
-    //   align: "left",
-    //   headerAlign: "left",
-    //   editable: true,
-    // },
-    // {
-    //   field: "joinDate",
-    //   headerName: "Join date",
-    //   type: "date",
-    //   width: 180,
-    //   editable: true,
-    // },
-    // {
-    //   field: "role",
-    //   headerName: "Department",
-    //   width: 220,
-    //   editable: true,
-    //   type: "singleSelect",
-    //   valueOptions: ["Market", "Finance", "Development"],
-    // },
     {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      // width: 100,
-      fullWidth: true,
+      width: 200,
+      // fullWidth: true,
       cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -284,43 +217,50 @@ const Return = (props) => {
   ];
 
   React.useEffect(() => {
-    if(fromSiteTextValue.length >= 3){
-      axios.post('http://localhost:3000/amazonpoc/returns/fromSite', { operatingNumber: props.operatingUnitNumber, search_string: fromSiteTextValue.toUpperCase() })
-      .then((response) => {
-        console.log(response.data.data)
-        setShipFromSite(response.data.data)
-      })
-      .catch((error) => {
-        console.log('error', error)
-      })
+    if (fromSiteTextValue.length >= 3) {
+      axios
+        .post("http://localhost:3000/amazonpoc/returns/fromSite", {
+          operatingNumber: props.operatingUnitNumber,
+          search_string: fromSiteTextValue.toUpperCase(),
+        })
+        .then((response) => {
+          console.log(response.data.data);
+          setShipFromSite(response.data.data);
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
     }
-  }, [fromSiteTextValue])
+  }, [fromSiteTextValue]);
 
   React.useEffect(() => {
-    if(fromSiteValue && fromSiteValue !== ''){
-      setOrgId(fromSiteValue.org_id)
-      setOrgValue(fromSiteValue.org_value)
+    if (fromSiteValue && fromSiteValue !== "") {
+      setOrgId(fromSiteValue.org_id);
+      setOrgValue(fromSiteValue.org_value);
     }
-  }, [fromSiteValue])
+  }, [fromSiteValue]);
 
   React.useEffect(() => {
-    if(orgId && orgId !== ''){
-      let org_name = orgValue.split('(')
-      axios.post('http://localhost:3000/amazonpoc/returns/shipFromAddress', {
-        org_id: orgId,
-        operatingUnitNumber: props.operatingUnitNumber,
-        org_name: org_name[0]
-      }).then((response) => {
-        console.log(response)
-        setShipFromAddresses(response.data.addresses)
-        setShipTo(response.data.shipTo)
-        setToRad(response.data.toRad)
-        setShipmentMethods(response.data.shipping_methods)
-      }).catch((err) => {
-        console.log('error', err)
-      })
+    if (orgId && orgId !== "") {
+      let org_name = orgValue.split("(");
+      axios
+        .post("http://localhost:3000/amazonpoc/returns/shipFromAddress", {
+          org_id: orgId,
+          operatingUnitNumber: props.operatingUnitNumber,
+          org_name: org_name[0],
+        })
+        .then((response) => {
+          console.log(response);
+          setShipFromAddresses(response.data.addresses);
+          setShipTo(response.data.shipTo);
+          setToRad(response.data.toRad);
+          setShipmentMethods(response.data.shipping_methods);
+        })
+        .catch((err) => {
+          console.log("error", err);
+        });
     }
-  }, [orgId])
+  }, [orgId]);
 
   return (
     <Box className="return-main-container">
@@ -354,7 +294,9 @@ const Return = (props) => {
         </Stack>
         <Stack className="stack-from" spacing={2} direction={"row"}>
           <Box>
-            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>From</InputLabel>
+            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>
+              From
+            </InputLabel>
             <Autocomplete
               freeSolo
               sx={{
@@ -376,7 +318,7 @@ const Return = (props) => {
               }}
               inputValue={fromSiteTextValue}
               onInputChange={(event, newInputValue) => {
-                  setFromSiteTextValue(newInputValue);
+                setFromSiteTextValue(newInputValue);
               }}
               renderInput={(params) => (
                 <TextField
@@ -402,7 +344,9 @@ const Return = (props) => {
             />
           </Box>
           <Box>
-            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>To</InputLabel>
+            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>
+              To
+            </InputLabel>
             <Autocomplete
               freeSolo
               sx={{
@@ -510,17 +454,25 @@ const Return = (props) => {
             />
           </Grid>
           <Grid item xs={3}>
-          <FormControl>
-            <FormLabel>Type</FormLabel>
-            <RadioGroup
-              row
-              value={typeValue}
-              onChange={(e) => setTypeValue(e.target.value)}
-            >
-              <FormControlLabel value="return" control={<Radio />} label="Return" />
-              <FormControlLabel value="repair" control={<Radio />} label="Repair" />
-            </RadioGroup>
-          </FormControl>
+            <FormControl>
+              <FormLabel>Type</FormLabel>
+              <RadioGroup
+                row
+                value={typeValue}
+                onChange={(e) => setTypeValue(e.target.value)}
+              >
+                <FormControlLabel
+                  value="return"
+                  control={<Radio />}
+                  label="Return"
+                />
+                <FormControlLabel
+                  value="repair"
+                  control={<Radio />}
+                  label="Repair"
+                />
+              </RadioGroup>
+            </FormControl>
           </Grid>
           <Grid item xs={3}>
             <FormControl fullWidth>
@@ -534,8 +486,10 @@ const Return = (props) => {
                 InputLabelProps={{ shrink: true }}
                 onChange={(e) => setReasonValue(e.target.value)}
               >
-                <MenuItem value='Excess Equipment Return'>Excess Equipment Return</MenuItem>
-                <MenuItem value='Return'>Return</MenuItem>
+                <MenuItem value="Excess Equipment Return">
+                  Excess Equipment Return
+                </MenuItem>
+                <MenuItem value="Return">Return</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -624,7 +578,7 @@ const Return = (props) => {
               }}
               variant="standard"
               label="Creation Date"
-              value={moment(Date.now()).format('DD-MMM-YYYY')}
+              value={moment(Date.now()).format("DD-MMM-YYYY")}
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
