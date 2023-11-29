@@ -137,11 +137,31 @@ const Return = (props) => {
 
   const [commentValue, setCommentValue] = React.useState('')
   const [returnReqValue, setReturnReqValue] = React.useState('')
+  const [createdBy, setCreatedBy] = React.useState(props.userName.toUpperCase())
+  const [creationDate, setCreationDate] = React.useState(moment(Date.now()).format('DD_MMM_YYYY'))
 
   const [shipmentMethods, setShipmentMethods] = React.useState([])
+  const [shippingMethod, setShippingMethod] = React.useState('')
   const [tracking, setTracking] = React.useState('')
   const [phoneNumber, setPhoneNumber] = React.useState('')
   const [shippingEmail, setShippingEmail] = React.useState('')
+
+  const handleonCLickSubmit = () => {}
+  const handleOnCLickCancel = () => {}
+  const handleOnClickSave = () => {
+    console.log('fromSiteValue', fromSiteValue)
+    console.log('shipFromAddressValue', shipFromAddressValue)
+    console.log('toRad', toRad)
+    console.log('shipTo', shipTo)
+    console.log('reasonValue', reasonValue)
+    console.log('commentValue', commentValue)
+    console.log('createdBy', createdBy)
+    console.log('creationDate', creationDate)
+    console.log('shippingMethod', shippingMethod)
+    console.log('tracking', tracking)
+    console.log('phoneNumber', phoneNumber)
+    console.log('shippingEmail', shippingEmail)
+  }
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -570,7 +590,7 @@ const Return = (props) => {
               }}
               variant="standard"
               label="Created by"
-              value={props.userName}
+              value={createdBy}
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -624,7 +644,7 @@ const Return = (props) => {
               }}
               variant="standard"
               label="Creation Date"
-              value={moment(Date.now()).format('DD-MMM-YYYY')}
+              value={creationDate}
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -665,6 +685,10 @@ const Return = (props) => {
                 },
               }}
               options={shipmentMethods}
+              value={shippingMethod}
+              onChange={(event, newValue) => {
+                setShippingMethod(newValue);
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -808,16 +832,24 @@ const Return = (props) => {
             marginRight: "15px",
             backgroundColor: "#E8EFFD",
             color: "#4747A1",
+            "&:hover": {
+              backgroundColor: '#E8EFFD'
+            }
           }}
           variant="contained"
+          onClick={handleOnCLickCancel}
         >
           Cancel
         </Button>
-        <Button
-          sx={{ marginLeft: "15px", border: "1px solid black", color: "black" }}
+        <Button sx={{ 
+          marginLeft: "15px", 
+          border: "1px solid black", 
+          color: "black" 
+        }}
           variant="outlined"
+          onClick={handleOnClickSave}
         >
-          Save Draft
+          Save
         </Button>
         <Button
           sx={{
@@ -825,7 +857,11 @@ const Return = (props) => {
             backgroundColor: "#F9A500",
             borderRadius: "5px",
             color: "black",
+            "&:hover": {
+              backgroundColor: '#F9A500'
+            }
           }}
+          onClick={handleonCLickSubmit}
         >
           Submit
         </Button>

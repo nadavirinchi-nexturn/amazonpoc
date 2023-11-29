@@ -86,7 +86,8 @@ app.post('/amazonpoc/returns/shipFromAddress', async function(req, res) {
     let shipping_methods = shipping_methods_data.rows.map(row => row[0])
     res.json({ 
       success: 'get call succeed!', 
-      addresses: processed_Addresses, 
+      addresses: processed_Addresses,
+      toRadId:  to_rad_ship_to_data['rows'][0][1],
       toRad: to_rad_ship_to_data['rows'][0][2],
       shipTo: to_rad_ship_to_data['rows'][0][5],
       shipping_methods: shipping_methods
