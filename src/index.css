@@ -17,3 +17,8 @@ body {
   font-family: GilroyLight;
   src: url(../public/fonts/Radomir\ Tinkov\ -\ Gilroy-Light.otf);
 }
+
+@font-face {
+  font-family: GilroyDark;
+  src: url(../public/fonts/Radomir\ Tinkov\ -\ Gilroy-ExtraBold.otf);
+}
