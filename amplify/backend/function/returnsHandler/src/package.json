@@ -8,7 +8,11 @@
     "aws-serverless-express": "^3.3.5",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
+    "nodemon": "^3.0.1",
     "oracledb": "^5.5.0"
+  },
+  "scripts": {
+    "start": "nodemon app.js"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92"

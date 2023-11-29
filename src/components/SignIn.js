@@ -1,20 +1,82 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, TextField } from "@mui/material";
+import { Box, Typography, Button, TextField, Backdrop, CircularProgress, Snackbar, Alert } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Slide, { SlideProps } from '@mui/material/Slide';
 
-const SignIn = () => {
-  const [userName, setuserName] = useState("");
+function SlideTransition(props) {
+  return <Slide {...props} direction="down" />;
+}
+
+const SignIn = (props) => {
+  const [openBackdrop, setOpenBackdrop] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
   const navigate = useNavigate();
 
-  const handleSignInBtn = () => {
-    console.log("user name is ", userName);
-    navigate("/list");
+  const handleCloseBackdrop = () => {
+    setOpenBackdrop(false);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+        return;
+    }
+    setOpenSnackbar(false);
+    setOpenBackdrop(false);
+};
+
+  const handleSignInBtn = async () => {
+    setOpenBackdrop(true)
+    if(props.userName === ''){
+      setOpenSnackbar(true)
+      return
+    }
+    let response;
+    console.log("user name is ", props.userName);
+    try{
+      response = await axios.post('http://localhost:3000/amazonpoc/returns/getOperatingUnitNumber', { username: props.userName.toUpperCase() })
+      const data = response.data
+      if(data.op_unit_number){
+        props.setOperatingUnitNumber(data.op_unit_number)
+      }
+      if(data.responsibility && data.responsibility.toUpperCase().includes('ONE STOP SHOP')){
+        navigate("/list");
+      }else{
+        setOpenSnackbar(true)
+      }
+      setOpenBackdrop(false)
+    }catch(err){
+      console.log('error', err)
+    }
   };
 
   return (
     <Box>
+      <Snackbar 
+          open={openSnackbar} 
+          autoHideDuration={6000} 
+          onClose={handleCloseSnackbar} 
+          anchorOrigin={{vertical: 'top', horizontal: 'center' }}
+          TransitionComponent={SlideTransition}
+      >
+          <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+            User is not Authorized
+          </Alert>
+      </Snackbar>
+      <Backdrop
+        sx={{
+          zIndex: 100,
+          backgroundColor: "rgba(255, 250, 250, 0.5)",
+          opacity: "0.5",
+        }}
+        open={openBackdrop}
+        onClick={handleCloseBackdrop}
+      >
+        <CircularProgress sx={{ color: "#F28500" }} />
+      </Backdrop>
       <Box className="banner-containers"></Box>
       <Box
         m="auto"
@@ -58,8 +120,8 @@ const SignIn = () => {
             label="Username"
             variant="outlined"
             inputLabelProps={{ style: { color: "black" } }}
-            value={userName}
-            onChange={(e) => setuserName(e.target.value)}
+            value={props.userName}
+            onChange={(e) => props.setuserName(e.target.value)}
             sx={{
               width: "100%",
               backgroundColor: "#ffffff",

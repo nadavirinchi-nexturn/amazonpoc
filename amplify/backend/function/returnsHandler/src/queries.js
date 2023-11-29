@@ -79,45 +79,90 @@ module.exports.get_reponsibility_name_query = (username) => {
     AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))`
 }
 
-module.exports.from_site_query = `SELECT
-mp.organization_code,
-ood.name              organization_name,
+module.exports.from_site_query = (operatingUnitNumber, search_string) => {
+    return `SELECT
+        mp.organization_code,
+        ood.name              organization_name,
+        mp.organization_id  
+    FROM
+        mtl_parameters               mp,
+        org_organization_definitions rad,
+        hr_all_organization_units    ood,
+        hr_locations                 hl
+    WHERE
+            ood.organization_id = mp.organization_id
+        AND decode(mp.attribute1, 'NA', 'AAA', mp.attribute6) = ( rad.organization_code )
+        AND hl.inventory_organization_id =rad.organization_id 
+        AND mp.organization_code <> 'OMO'
+        AND rad.operating_unit = ${operatingUnitNumber}
+        AND mp.attribute3 <> 'RAD' 
+        AND hl.ATTRIBUTE4 = 'Yes' 
+        AND (UPPER(mp.organization_code) like '%${search_string}%' or UPPER(ood.name)  like '%${search_string}%')
+        AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id) order by 1`
+}
 
-mp.organization_id
-FROM
-mtl_parameters               mp,
-org_organization_definitions rad,
-hr_all_organization_units    ood
-WHERE
-    ood.organization_id = mp.organization_id
-AND decode(mp.attribute1, 'NA', 'AAA', mp.attribute6) = ( rad.organization_code )
-and rad.OPERATING_UNIT = `
+module.exports.ship_from_address_query = (org_id) => {
+    return `SELECT
+    hl.location_code AS organization_name,
+    hl.location_id,
+    address_line_1
+    || ','
+    || address_line_2
+    || ','
+    || town_or_city
+    || ','
+    || postal_code
+    || ','
+    || region_2
+    || ','
+    || country       address
+    FROM
+    hr_locations                 hl,
+    org_organization_definitions ood
+    WHERE
+    hl.inventory_organization_id = ood.organization_id
+    AND sysdate BETWEEN hl.creation_date AND nvl(hl.inactive_date, sysdate + 1)
+    AND ood.organization_id = ${org_id}`
+}
 
-module.exports.ship_from_address_query = `SELECT
-hl.location_code AS organization_name,
-hl.location_id,
-address_line_1
-|| ','
-|| address_line_2
-|| ','
-|| town_or_city
-|| ','
-|| postal_code
-|| ','
-|| region_2
-|| ','
-|| country       address
-FROM
-hr_locations                 hl,
-org_organization_definitions ood
-WHERE
-hl.inventory_organization_id = ood.organization_id
-AND sysdate BETWEEN hl.creation_date AND nvl(hl.inactive_date, sysdate + 1)
-AND ood.organization_id = `
+module.exports.to_rad_ship_to_query = (operatingUnitNumber, org_name) => {
+    return `SELECT
+    rad.organization_code rad_org_code,
+        rad.organization_id   rad_org_id,
+        rad.organization_name rad_org_name,
+        hl.location_id,
+        address_line_1
+        || ','
+        || address_line_2
+        || ','
+        || town_or_city
+        || ','
+        || postal_code
+        || ','
+        || region_2
+        || ','
+        || country            rad_address,
+        hl.location_code      AS rad_org_address
+    FROM
+        mtl_parameters               mp,
+        org_organization_definitions rad,
+        hr_all_organization_units    ood,
+        hr_locations                 hl
+    WHERE
+        ood.organization_id = mp.organization_id
+        AND decode(mp.attribute1, 'NA', 'AAA', mp.attribute6) = ( rad.organization_code )
+        AND hl.inventory_organization_id =rad.organization_id 
+        AND mp.organization_code <> 'OMO'     
+        AND mp.attribute3 <> 'RAD' 
+        AND hl.ATTRIBUTE4 = 'Yes' 
+        AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id)
+        AND rad.operating_unit = ${operatingUnitNumber}
+        AND (ood.name='${org_name}')`
+} 
 
 module.exports.shipment_method_query = (org_id) => {
     return `SELECT DISTINCT
-    flvv.description description,
+    flvv.description description
     FROM
     wsh_carrier_services wcs,
     wsh_org_carrier_services_v woc,

@@ -8,18 +8,19 @@ import SignIn from "./components/SignIn";
 import ListReturnProducts from "./components/ListReturnProducts";
 
 function App() {
+
+  const [operatingUnitNumber, setOperatingUnitNumber] = React.useState('')
+  const [userName, setuserName] = React.useState("");
+
   return (
-    // <Box sx={{ width: "100vw", height: "100vh" }}>
-    //   hi
-    // </Box>
     <BrowserRouter>
-      <div className="App">
+      <Box className="App">
         <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/create" element={<Return />} />
+          <Route path="/" element={<SignIn setOperatingUnitNumber={setOperatingUnitNumber} userName={userName} setuserName={setuserName} />} />
+          <Route path="/create" element={<Return operatingUnitNumber={operatingUnitNumber} userName={userName} />} />
           <Route path="/list" element={<ListReturnProducts />} />
         </Routes>
-      </div>
+      </Box>
     </BrowserRouter>
   );
 }

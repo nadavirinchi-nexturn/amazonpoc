@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Typography,
@@ -42,6 +43,8 @@ import {
   randomId,
   randomArrayItem,
 } from "@mui/x-data-grid-generator";
+import axios from "axios";
+import moment from "moment/moment";
 
 const roles = ["Market", "Finance", "Development"];
 const randomRole = () => {
@@ -112,23 +115,33 @@ function EditToolbar(props) {
   );
 }
 
-const top100Films = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
-  {
-    title: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-];
+const Return = (props) => {
 
-const Return = () => {
   const [rows, setRows] = React.useState(initialRows);
   const [rowModesModel, setRowModesModel] = React.useState({});
+
+  const [shipFromSite, setShipFromSite] = React.useState([])
+  const [fromSiteValue, setFromSiteValue] = React.useState({ org_value: '', org_id: '' })
+  const [fromSiteTextValue, setFromSiteTextValue] = React.useState('')
+
+  const [orgId, setOrgId] = React.useState('')
+  const [orgValue, setOrgValue] = React.useState('')
+
+  const [shipFromAddresses, setShipFromAddresses] = React.useState([])
+  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState('')
+  const [toRad, setToRad] = React.useState('')
+  const [shipTo, setShipTo] = React.useState('')
+
+  const [typeValue, setTypeValue] = React.useState('return')
+  const [reasonValue, setReasonValue] = React.useState('')
+
+  const [commentValue, setCommentValue] = React.useState('')
+  const [returnReqValue, setReturnReqValue] = React.useState('')
+
+  const [shipmentMethods, setShipmentMethods] = React.useState([])
+  const [tracking, setTracking] = React.useState('')
+  const [phoneNumber, setPhoneNumber] = React.useState('')
+  const [shippingEmail, setShippingEmail] = React.useState('')
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -270,6 +283,45 @@ const Return = () => {
     },
   ];
 
+  React.useEffect(() => {
+    if(fromSiteTextValue.length >= 3){
+      axios.post('http://localhost:3000/amazonpoc/returns/fromSite', { operatingNumber: props.operatingUnitNumber, search_string: fromSiteTextValue.toUpperCase() })
+      .then((response) => {
+        console.log(response.data.data)
+        setShipFromSite(response.data.data)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+    }
+  }, [fromSiteTextValue])
+
+  React.useEffect(() => {
+    if(fromSiteValue && fromSiteValue !== ''){
+      setOrgId(fromSiteValue.org_id)
+      setOrgValue(fromSiteValue.org_value)
+    }
+  }, [fromSiteValue])
+
+  React.useEffect(() => {
+    if(orgId && orgId !== ''){
+      let org_name = orgValue.split('(')
+      axios.post('http://localhost:3000/amazonpoc/returns/shipFromAddress', {
+        org_id: orgId,
+        operatingUnitNumber: props.operatingUnitNumber,
+        org_name: org_name[0]
+      }).then((response) => {
+        console.log(response)
+        setShipFromAddresses(response.data.addresses)
+        setShipTo(response.data.shipTo)
+        setToRad(response.data.toRad)
+        setShipmentMethods(response.data.shipping_methods)
+      }).catch((err) => {
+        console.log('error', err)
+      })
+    }
+  }, [orgId])
+
   return (
     <Box className="return-main-container">
       <Box className="banner-container">
@@ -302,15 +354,8 @@ const Return = () => {
         </Stack>
         <Stack className="stack-from" spacing={2} direction={"row"}>
           <Box>
-            <InputLabel
-              id="From-autoComplete"
-              sx={{ fontSize: "18px", fontWeight: 600 }}
-            >
-              From
-            </InputLabel>
+            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>From</InputLabel>
             <Autocomplete
-              id="free-solo-demo"
-              labelId="From-autoComplete"
               freeSolo
               sx={{
                 width: "360px",
@@ -323,7 +368,16 @@ const Return = () => {
                   paddingRight: "10px!important",
                 },
               }}
-              options={top100Films.map((option) => option.title)}
+              options={shipFromSite}
+              getOptionLabel={(shipFromSite) => shipFromSite.org_value}
+              value={fromSiteValue}
+              onChange={(event, newValue) => {
+                setFromSiteValue(newValue);
+              }}
+              inputValue={fromSiteTextValue}
+              onInputChange={(event, newInputValue) => {
+                  setFromSiteTextValue(newInputValue);
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -340,22 +394,16 @@ const Return = () => {
                   }}
                   required={true}
                   InputLabelProps={{ style: { color: "black" } }}
-                  // label="From"
                   placeholder="From(Site/Dept)"
+                  value={fromSiteTextValue}
+                  onChange={(e) => setFromSiteTextValue(e.target.value)}
                 />
               )}
             />
           </Box>
           <Box>
-            <InputLabel
-              id="Shipto-autoComplete"
-              sx={{ fontSize: "18px", fontWeight: 600 }}
-            >
-              To
-            </InputLabel>
+            <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>To</InputLabel>
             <Autocomplete
-              id="shipTo-solo-demo"
-              labelId="Shipto-autoComplete"
               freeSolo
               sx={{
                 width: "360px",
@@ -368,7 +416,11 @@ const Return = () => {
                   paddingRight: "10px!important",
                 },
               }}
-              options={top100Films.map((option) => option.title)}
+              options={shipFromAddresses}
+              value={shipFromAddressValue}
+              onChange={(event, newValue) => {
+                setShipFromAddresseValue(newValue);
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -417,10 +469,9 @@ const Return = () => {
                   fontWeight: "500",
                 },
               }}
-              id="outlined-read-only-to-rad"
               variant="standard"
+              value={toRad}
               label="To RAD *"
-              defaultValue="RAD1-OTIT-RAD-RAD-NA"
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -436,9 +487,7 @@ const Return = () => {
             <TextField
               sx={{
                 input: { color: "#373839" },
-                // border: "1px solid red",
                 width: "100%",
-                // height: "60px",
               }}
               InputLabelProps={{
                 style: {
@@ -447,12 +496,10 @@ const Return = () => {
                   fontWeight: "500",
                 },
               }}
-              id="outlined-read-only-ship-to-add"
               variant="standard"
+              value={shipTo}
               label="Ship to Address *"
-              defaultValue="RAD1-Rapid Asset Deploy’t Whse"
               InputProps={{
-                // readOnly: true,
                 disableUnderline: true,
                 style: {
                   fontSize: "16px",
@@ -463,60 +510,17 @@ const Return = () => {
             />
           </Grid>
           <Grid item xs={3}>
-            <FormControl sx={{ width: "100%" }}>
-              <FormLabel
-                sx={{
-                  "& .MuiFormControl-root": {
-                    "& .MuiFormLabel-root": {
-                      //   border: "1px solid red",
-                    },
-                  },
-                }}
-              >
-                Type
-              </FormLabel>
-              <RadioGroup
-                sx={{ marginBottom: "8px" }}
-                row
-                // aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
-                // value={value}
-                // onChange={handleChange}
-              >
-                <FormControlLabel
-                  value="return"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "#D1D1D6",
-                        "&.Mui-checked": {
-                          color: "#373839",
-                        },
-                      }}
-                    />
-                  }
-                  label="Return"
-                  sx={{ color: "#373839" }}
-                />
-                <FormControlLabel
-                  value="repair"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "#D1D1D6",
-                        "&.Mui-checked": {
-                          color: "#373839",
-                        },
-                      }}
-                    />
-                  }
-                  label="Repair"
-                  sx={{
-                    color: "#373839",
-                  }}
-                />
-              </RadioGroup>
-            </FormControl>
+          <FormControl>
+            <FormLabel>Type</FormLabel>
+            <RadioGroup
+              row
+              value={typeValue}
+              onChange={(e) => setTypeValue(e.target.value)}
+            >
+              <FormControlLabel value="return" control={<Radio />} label="Return" />
+              <FormControlLabel value="repair" control={<Radio />} label="Repair" />
+            </RadioGroup>
+          </FormControl>
           </Grid>
           <Grid item xs={3}>
             <FormControl fullWidth>
@@ -525,32 +529,26 @@ const Return = () => {
               <Select
                 labelId="demo-simple-select-reason"
                 id="demo-simple-select-reason"
-                // value={"10"}
+                value={reasonValue}
                 label="Reason"
                 InputLabelProps={{ shrink: true }}
-                // onChange={handleChange}
+                onChange={(e) => setReasonValue(e.target.value)}
               >
-                <MenuItem value={10}>Free text</MenuItem>
-                <MenuItem value={20}>Free text</MenuItem>
-                <MenuItem value={30}>Free text</MenuItem>
+                <MenuItem value='Excess Equipment Return'>Excess Equipment Return</MenuItem>
+                <MenuItem value='Return'>Return</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={3}>
             <TextField
-              id="comment-txtfield"
               label="Comment"
               variant="outlined"
-              // InputLabelProps={{ style: { color: "black" } }}
+              value={commentValue}
+              onChange={(e) => setCommentValue(e.target.value)}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
@@ -561,7 +559,6 @@ const Return = () => {
             <TextField
               sx={{
                 input: { color: "#373839" },
-                // border: "1px solid red",
                 width: "100%",
               }}
               InputLabelProps={{
@@ -571,10 +568,9 @@ const Return = () => {
                   fontWeight: "500",
                 },
               }}
-              id="outlined-read-only-createdby"
               variant="standard"
               label="Created by"
-              defaultValue="Shiva Sankar"
+              value={props.userName}
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -590,7 +586,6 @@ const Return = () => {
             <TextField
               sx={{
                 input: { color: "#373839" },
-                // border: "1px solid red",
                 width: "100%",
               }}
               InputLabelProps={{
@@ -600,10 +595,9 @@ const Return = () => {
                   fontWeight: "500",
                 },
               }}
-              id="outlined-read-only-returnnumber"
               variant="standard"
+              value={returnReqValue}
               label="Return Request Number"
-              defaultValue="1233252344632"
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -619,7 +613,6 @@ const Return = () => {
             <TextField
               sx={{
                 input: { color: "#373839" },
-                // border: "1px solid red",
                 width: "100%",
               }}
               InputLabelProps={{
@@ -629,10 +622,9 @@ const Return = () => {
                   fontWeight: "500",
                 },
               }}
-              id="outlined-read-only-creation-date"
               variant="standard"
               label="Creation Date"
-              defaultValue="11-Nov-2023"
+              value={moment(Date.now()).format('DD-MMM-YYYY')}
               InputProps={{
                 readOnly: true,
                 disableUnderline: true,
@@ -664,38 +656,24 @@ const Return = () => {
 
           <Grid item xs={3}>
             <Autocomplete
-              id="free-solo-ship-method"
-              labelId="From-autoComplete-shipmethod"
               freeSolo
               sx={{
-                // width: "360px",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  // borderColor: "#F9A500",
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
               }}
-              options={top100Films.map((option) => option.title)}
+              options={shipmentMethods}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   variant="outlined"
                   InputProps={{
                     ...params.InputProps,
-                    // startAdornment: (
-                    //   <InputAdornment position="start">
-                    //     {" "}
-                    //     <SearchIcon />
-                    //   </InputAdornment>
-                    // ),
                     disableUnderline: true,
                   }}
                   required={true}
-                  // InputLabelProps={{ style: { color: "black" } }}
-                  // label="From"
                   label="Shipping Method"
                 />
               )}
@@ -703,20 +681,14 @@ const Return = () => {
           </Grid>
           <Grid item xs={3}>
             <TextField
-              id="tracing-txtfield"
               label="Tracking *"
               variant="outlined"
-              //   required={true}
-              // InputLabelProps={{ style: { color: "black" } }}
+              value={tracking}
+              onChange={(e) => setTracking(e.target.value)}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
@@ -747,20 +719,15 @@ const Return = () => {
           <Grid item xs={3}></Grid>
           <Grid item xs={3}>
             <TextField
-              id="req-phone-txtfields"
               label="Requested Phone Number"
               variant="outlined"
-              //   required={true}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               inputLabelProps={{ style: { color: "black" } }}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
@@ -769,20 +736,15 @@ const Return = () => {
           </Grid>
           <Grid item xs={3}>
             <TextField
-              id="req-email-txtfields"
               label="Requested Email"
               variant="outlined"
-              //   required={true}
+              value={shippingEmail}
+              onChange={(e) => setShippingEmail(e.target.value)}
               inputLabelProps={{ style: { color: "black" } }}
               sx={{
                 width: "100%",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
