@@ -302,3 +302,7 @@ module.exports.insert_into_lines = (
         '${asset_number}}'
     )`
 }
+
+module.exports.submit_query = (header_id, userName) => {
+    return `execute xxmb_submit_action('${header_id}' ,'BCOLDREN')`
+}
