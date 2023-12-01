@@ -10,6 +10,11 @@ import {
   Divider,
   Select,
   MenuItem,
+  Backdrop,
+  CircularProgress,
+  ClickAwayListener,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React from "react";
@@ -24,65 +29,43 @@ import InputAdornment from "@mui/material/InputAdornment";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import SearchIcon from "@mui/icons-material/Search";
 import { Block } from "@mui/icons-material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import SaveIcon from "@mui/icons-material/Save";
 import Button from "@mui/material/Button";
 import CancelIcon from "@mui/icons-material/Close";
-import {
-  GridRowModes,
-  DataGrid,
-  GridToolbarContainer,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-} from "@mui/x-data-grid";
-import {
-  randomCreatedDate,
-  randomTraderName,
-  randomId,
-  randomArrayItem,
-} from "@mui/x-data-grid-generator";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import axios from "axios";
 import moment from "moment/moment";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Slide, { SlideProps } from "@mui/material/Slide";
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [
-      { id, serial: "", comment: "", asset: "", isNew: true },
-      ...oldRows,
-    ]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Line
-      </Button>
-    </GridToolbarContainer>
-  );
+function SlideTransition(props) {
+  return <Slide {...props} direction="down" />;
 }
 
 const Return = (props) => {
-  const [rows, setRows] = React.useState([]);
-  const [rowModesModel, setRowModesModel] = React.useState({});
+  // const [rows, setRows] = React.useState([]);
+  // const [rowModesModel, setRowModesModel] = React.useState({});
 
   const [shipFromSite, setShipFromSite] = React.useState([]);
-  const [fromSiteValue, setFromSiteValue] = React.useState({ org_value: "", org_id: "" });
+  const [fromSiteValue, setFromSiteValue] = React.useState({
+    org_value: "",
+    org_id: "",
+  });
   const [fromSiteTextValue, setFromSiteTextValue] = React.useState("");
 
   const [orgId, setOrgId] = React.useState("");
   const [orgValue, setOrgValue] = React.useState("");
 
   const [shipFromAddresses, setShipFromAddresses] = React.useState([]);
-  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState({ ship_from_org_value: '', ship_from_org_id: '' });
+  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState({
+    ship_from_org_value: "",
+    ship_from_org_id: "",
+  });
   const [toRad, setToRad] = React.useState("");
   const [toRadID, setToRadID] = React.useState("");
   const [shipTo, setShipTo] = React.useState("");
@@ -90,168 +73,108 @@ const Return = (props) => {
 
   const [typeValue, setTypeValue] = React.useState("return");
   const [reasonValue, setReasonValue] = React.useState("");
-  const [status, setStatus] = React.useState('Draft')
+  const [status, setStatus] = React.useState("Draft");
 
   const [commentValue, setCommentValue] = React.useState("");
   const [returnReqValue, setReturnReqValue] = React.useState("");
-  const [createdBy, setCreatedBy] = React.useState( props.userName.toUpperCase());
-  const [creationDate, setCreationDate] = React.useState(moment(Date.now()).format("DD_MMM_YYYY"));
+  const [createdBy, setCreatedBy] = React.useState(
+    props.userName.toUpperCase()
+  );
+  const [creationDate, setCreationDate] = React.useState(
+    moment(Date.now()).format("DD_MMM_YYYY")
+  );
 
   const [shipmentMethods, setShipmentMethods] = React.useState([]);
-  const [shippingMethod, setShippingMethod] = React.useState({shipping_method_code: '', shipping_method: ''});
+  const [shippingMethod, setShippingMethod] = React.useState({
+    shipping_method_code: "",
+    shipping_method: "",
+  });
   const [tracking, setTracking] = React.useState("");
   const [requestedphoneNumber, setReqiuestedPhoneNumber] = React.useState("");
   const [shippingEmail, setShippingEmail] = React.useState("");
-  const [shippingType, setShippingType] = React.useState('')
+  const [shippingType, setShippingType] = React.useState("");
+
+  const [lineData, setLineData] = React.useState([]);
+  const [rowIndex, setRowIndex] = React.useState(-1);
+  const [columnIndex, setColumnIndex] = React.useState(-1);
+  const [openBackdrop, setOpenBackdrop] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [alertMsg, setAlertMsg] = React.useState("");
 
   const handleonCLickSubmit = () => {
-    console.log('rowa', rows)
+    console.log("line Data", lineData);
   };
   const handleOnCLickCancel = () => {};
   const handleOnClickSave = async () => {
-    let data = await axios.post("http://localhost:3000/amazonpoc/returns/saveHeaders", {
-      fromSiteValue: fromSiteValue,
-      shipFromAddressValue: shipFromAddressValue,
-      toRad: toRad,
-      toRadID: toRadID,
-      shipTo: shipTo,
-      shipToID: shipToID,
-      typeValue: typeValue,
-      reasonValue: reasonValue,
-      commentValue: commentValue,
-      status: status,
-      createdBy: '1484',
-      creationDate: creationDate,
-      shippingMethod: shippingMethod,
-      shippingType: shippingType,
-      userId: '1484',
-      loginId: 1234,
-      userName: 'BCOLDREN',
-      requestedphoneNumber: requestedphoneNumber,
-      shippingEmail: shippingEmail,
-      lines: rows
-    })
-    console.log('data', data)
-  };
-
-  const handleRowEditStop = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
+    if (fromSiteValue.org_id === "") {
+      setAlertMsg("please select From site");
+      setOpenSnackbar(true);
+      return;
     }
-  };
 
-  const handleEditClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
+    if (shipFromAddressValue.ship_from_org_id === "") {
+      setAlertMsg("please select ship from address");
+      setOpenSnackbar(true);
+      return;
     }
+
+    if (shippingMethod.shipping_method_code === "") {
+      setAlertMsg("please select shipping method");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    if (tracking === "") {
+      setAlertMsg("please fill tracking number");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    if (shippingType === "") {
+      setAlertMsg("please select shipping type");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    if (lineData.length === 0) {
+      setAlertMsg("please provide Line");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    setAlertMsg("");
+
+    let data = await axios.post(
+      "http://localhost:3000/amazonpoc/returns/saveHeaders",
+      {
+        fromSiteValue: fromSiteValue,
+        shipFromAddressValue: shipFromAddressValue,
+        toRad: toRad,
+        toRadID: toRadID,
+        shipTo: shipTo,
+        shipToID: shipToID,
+        typeValue: typeValue,
+        reasonValue: reasonValue,
+        commentValue: commentValue,
+        status: status,
+        createdBy: "1484",
+        creationDate: creationDate,
+        shippingMethod: shippingMethod,
+        shippingType: shippingType,
+        userId: "1484",
+        loginId: 1234,
+        userName: "BCOLDREN",
+        requestedphoneNumber: requestedphoneNumber,
+        shippingEmail: shippingEmail,
+        lines: lineData,
+      }
+    );
+    console.log("data", data);
   };
-
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
-  };
-
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
-
-  const columns = [
-    {
-      field: "serial_number",
-      headerName: "Serial",
-      width: 340,
-      editable: true,
-      // align: "center",
-      // headerAlign: "center",
-    },
-    {
-      field: "asset_number",
-      headerName: "Asset",
-      // headerAlign: "center",
-      width: 300,
-      fullWidth: true,
-      editable: true,
-      // align: "center",
-    },
-    {
-      field: "comments",
-      headerName: "Comments",
-      width: 320,
-      fullWidth: true,
-      editable: true,
-      // align: "center",
-      // headerAlign: "center",
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
-      width: 200,
-      // fullWidth: true,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ];
-        }
-
-        return [
-          <GridActionsCellItem
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
-        ];
-      },
-    },
-  ];
 
   React.useEffect(() => {
     if (fromSiteTextValue.length >= 3) {
+      setOpenBackdrop(true);
       axios
         .post("http://localhost:3000/amazonpoc/returns/fromSite", {
           operatingNumber: props.operatingUnitNumber,
@@ -260,6 +183,7 @@ const Return = (props) => {
         .then((response) => {
           console.log(response.data.data);
           setShipFromSite(response.data.data);
+          setOpenBackdrop(false);
         })
         .catch((error) => {
           console.log("error", error);
@@ -276,6 +200,7 @@ const Return = (props) => {
 
   React.useEffect(() => {
     if (orgId && orgId !== "") {
+      setOpenBackdrop(true);
       let org_name = orgValue.split("(");
       axios
         .post("http://localhost:3000/amazonpoc/returns/shipFromAddress", {
@@ -291,6 +216,7 @@ const Return = (props) => {
           setToRad(response.data.toRad);
           setToRadID(response.data.toRadId);
           setShipmentMethods(response.data.shipping_methods);
+          setOpenBackdrop(false);
         })
         .catch((err) => {
           console.log("error", err);
@@ -298,9 +224,73 @@ const Return = (props) => {
     }
   }, [orgId]);
 
+  const handleCloseBackdrop = () => {
+    setOpenBackdrop(false);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+    setOpenBackdrop(false);
+  };
+
+  const handleSerialChange = (rowIndex, colname, value) => {
+    lineData[rowIndex][colname] = value;
+    setLineData([...lineData]);
+  };
+  const handleAssetChange = (rowIndex, colname, value) => {
+    lineData[rowIndex][colname] = value;
+    setLineData([...lineData]);
+  };
+
+  const handleCommentChange = (rowIndex, colname, value) => {
+    lineData[rowIndex][colname] = value;
+    setLineData([...lineData]);
+  };
+
+  const handleExit = () => {
+    setRowIndex(-1);
+    setColumnIndex(-1);
+  };
+
+  const handleAddNewLine = () => {
+    setLineData((oldRecord) => [
+      { serial: "", asset: "", comment: "" },
+      ...oldRecord,
+    ]);
+  };
+
   return (
     <Box className="return-main-container">
       <Box className="banner-container">
+        <Backdrop
+          sx={{
+            zIndex: 100,
+            backgroundColor: "rgba(255, 250, 250, 0.5)",
+            opacity: "0.5",
+          }}
+          open={openBackdrop}
+          onClick={handleCloseBackdrop}
+        >
+          <CircularProgress sx={{ color: "#F28500" }} />
+        </Backdrop>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          TransitionComponent={SlideTransition}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {alertMsg}
+          </Alert>
+        </Snackbar>
         <Stack className="stack-from" direction={"row"}>
           <Typography
             sx={{
@@ -327,11 +317,25 @@ const Return = (props) => {
             label="DRAFT"
             variant="outlined"
           />
+          {returnReqValue && returnReqValue !== "" && (
+            <Typography
+              sx={{
+                fontWeight: "650",
+                fontFamily: "GilroyLight",
+                fontSize: 16,
+                paddingTop: "4px",
+                paddingLeft: "120px",
+              }}
+              display={"inline"}
+            >
+              Return Request: {returnReqValue}
+            </Typography>
+          )}
         </Stack>
         <Stack className="stack-from" spacing={2} direction={"row"}>
           <Box>
             <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>
-              From
+              From Site *
             </InputLabel>
             <Autocomplete
               freeSolo
@@ -381,7 +385,7 @@ const Return = (props) => {
           </Box>
           <Box>
             <InputLabel sx={{ fontSize: "18px", fontWeight: 600 }}>
-              To
+              Ship from Address *
             </InputLabel>
             <Autocomplete
               freeSolo
@@ -466,7 +470,7 @@ const Return = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <TextField
               sx={{
                 input: { color: "#373839" },
@@ -513,7 +517,7 @@ const Return = (props) => {
               </RadioGroup>
             </FormControl>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-reason">Reason</InputLabel>
 
@@ -548,7 +552,7 @@ const Return = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <TextField
               sx={{
                 input: { color: "#373839" },
@@ -575,7 +579,7 @@ const Return = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={3}>
+          {/* <Grid item xs={3}>
             <TextField
               sx={{
                 input: { color: "#373839" },
@@ -601,7 +605,7 @@ const Return = (props) => {
                 },
               }}
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={3}>
             <TextField
               sx={{
@@ -658,7 +662,9 @@ const Return = (props) => {
                 },
               }}
               options={shipmentMethods}
-              getOptionLabel={(shipmentMethods => shipmentMethods.shipping_method)}
+              getOptionLabel={(shipmentMethods) =>
+                shipmentMethods.shipping_method
+              }
               value={shippingMethod}
               onChange={(event, newValue) => {
                 setShippingMethod(newValue);
@@ -705,8 +711,8 @@ const Return = (props) => {
                 InputLabelProps={{ shrink: true }}
                 onChange={(e) => setShippingType(e.target.value)}
               >
-                <MenuItem value='Parcel'>Parcel</MenuItem>
-                <MenuItem value='Pallet'>Pallet</MenuItem>
+                <MenuItem value="Parcel">Parcel</MenuItem>
+                <MenuItem value="Pallet">Pallet</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -757,36 +763,184 @@ const Return = (props) => {
           backgroundColor: "#ffffff",
         }}
       >
-        <Grid container p={5} direction="row" columnSpacing={2} rowSpacing={2}>
-          <Grid item xs={12}>
+        <Grid container m={3} direction="row" columnSpacing={2} rowSpacing={2}>
+          <Grid item xs={11}>
             <Typography> Line Details</Typography>
             <Divider sx={{ paddingTop: "10px" }} />
           </Grid>
         </Grid>
-        {/* <EditToolbar /> */}
-        <DataGrid
-          sx={{
-            marginLeft: "40px",
-            marginRight: "40px",
-            marginBottom: "10px",
-          }}
-          rows={rows}
-          columns={columns}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          disableRowSelectionOnClick={true}
-          hideFooterSelectedRowCount
-          hideFooterPagination
-          slots={{
-            toolbar: EditToolbar,
-          }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel },
-          }}
-        />
+        <Box m={2}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#4747A1",
+              margin: "10px",
+            }}
+            onClick={handleAddNewLine}
+          >
+            + Add Line
+          </Button>
+          <ClickAwayListener onClickAway={() => handleExit()}>
+            <TableContainer
+              component={Paper}
+              sx={{ margin: "5px", height: "280px" }}
+            >
+              <Table stickyHeader aria-label="simple table">
+                <TableHead
+                  stickyHeader
+                  sx={{ backgroundColor: "#F6F5FA", fontFamily: "GilroyLight" }}
+                >
+                  <TableRow>
+                    <TableCell
+                      width="25%"
+                      sx={{
+                        color: "#7B7E94",
+                        fontSize: "16px",
+                        fontWeight: "550",
+                      }}
+                    >
+                      Serial
+                    </TableCell>
+                    <TableCell
+                      width="25%"
+                      sx={{
+                        color: "#7B7E94",
+                        fontSize: "16px",
+                        fontWeight: "550",
+                      }}
+                    >
+                      Asset
+                    </TableCell>
+                    <TableCell
+                      width="25%"
+                      sx={{
+                        color: "#7B7E94",
+                        fontSize: "16px",
+                        fontWeight: "550",
+                      }}
+                    >
+                      Comment
+                    </TableCell>
+                    <TableCell
+                      width="25%"
+                      sx={{
+                        color: "#7B7E94",
+                        fontSize: "16px",
+                        fontWeight: "550",
+                      }}
+                    >
+                      Action
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {lineData.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        onClick={() => {
+                          setRowIndex(index);
+                          setColumnIndex(0);
+                        }}
+                        sx={{
+                          color: "#373839",
+                          fontSize: "14px",
+                          fontWeight: "550",
+                        }}
+                      >
+                        {rowIndex === index && columnIndex === 0 ? (
+                          <TextField
+                            defaultValue={row.serial}
+                            fullWidth
+                            onChange={(event) =>
+                              handleSerialChange(
+                                index,
+                                "serial",
+                                event.target.value
+                              )
+                            }
+                          />
+                        ) : (
+                          row.serial
+                        )}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          setRowIndex(index);
+                          setColumnIndex(1);
+                        }}
+                        sx={{
+                          color: "#373839",
+                          fontSize: "14px",
+                          fontWeight: "550",
+                        }}
+                      >
+                        {rowIndex === index && columnIndex === 1 ? (
+                          <TextField
+                            defaultValue={row.asset}
+                            fullWidth
+                            onChange={(event) =>
+                              handleAssetChange(
+                                index,
+                                "asset",
+                                event.target.value
+                              )
+                            }
+                          />
+                        ) : (
+                          row.asset
+                        )}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          setRowIndex(index);
+                          setColumnIndex(2);
+                        }}
+                        sx={{
+                          color: "#373839",
+                          fontSize: "14px",
+                          fontWeight: "550",
+                        }}
+                      >
+                        {rowIndex === index && columnIndex === 2 ? (
+                          <TextField
+                            defaultValue={row.comment}
+                            fullWidth
+                            onChange={(event) =>
+                              handleCommentChange(
+                                index,
+                                "comment",
+                                event.target.value
+                              )
+                            }
+                          />
+                        ) : (
+                          row.comment
+                        )}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "#373839",
+                          fontSize: "14px",
+                          fontWeight: "550",
+                        }}
+                      >
+                        <DeleteIcon
+                          onClick={() => {
+                            setLineData(
+                              lineData.filter(
+                                (line, indexx) => indexx !== index
+                              )
+                            );
+                          }}
+                        ></DeleteIcon>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </ClickAwayListener>
+        </Box>
       </Box>
       {/* sx={{ marginRight: "0px", marginLeft: "auto" }} */}
       <Box
