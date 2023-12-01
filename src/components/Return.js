@@ -849,18 +849,18 @@ const Return = (props) => {
                       >
                         {rowIndex === index && columnIndex === 0 ? (
                           <TextField
-                            defaultValue={row.serial}
+                            defaultValue={row.serial_number}
                             fullWidth
                             onChange={(event) =>
                               handleSerialChange(
                                 index,
-                                "serial",
+                                "serial_number",
                                 event.target.value
                               )
                             }
                           />
                         ) : (
-                          row.serial
+                          row.serial_number
                         )}
                       </TableCell>
                       <TableCell
@@ -876,18 +876,26 @@ const Return = (props) => {
                       >
                         {rowIndex === index && columnIndex === 1 ? (
                           <TextField
-                            defaultValue={row.asset}
+                            variant="outlined"
+                            focused
+                            sx={{
+                              "&.Mui-focused .MuiOutlinedInput-root": {
+                                cursor: "pointer",
+                              },
+                            }}
+                            type="text"
+                            defaultValue={row.asset_number}
                             fullWidth
                             onChange={(event) =>
                               handleAssetChange(
                                 index,
-                                "asset",
+                                "asset_number",
                                 event.target.value
                               )
                             }
                           />
                         ) : (
-                          row.asset
+                          row.asset_number
                         )}
                       </TableCell>
                       <TableCell
@@ -903,18 +911,18 @@ const Return = (props) => {
                       >
                         {rowIndex === index && columnIndex === 2 ? (
                           <TextField
-                            defaultValue={row.comment}
+                            defaultValue={row.comments}
                             fullWidth
                             onChange={(event) =>
                               handleCommentChange(
                                 index,
-                                "comment",
+                                "comments",
                                 event.target.value
                               )
                             }
                           />
                         ) : (
-                          row.comment
+                          row.comments
                         )}
                       </TableCell>
                       <TableCell
