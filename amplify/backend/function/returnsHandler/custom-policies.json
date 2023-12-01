@@ -1,6 +1,62 @@
 [
   {
-    "Action": [],
-    "Resource": []
+    "Action": [
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeInstances",
+      "ec2:AttachNetworkInterface"
+    ],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["ec2:*"],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["elasticloadbalancing:*"],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["cloudwatch:*"],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["autoscaling:*"],
+    "Resource": ["*"]
+  },
+  {
+    "Action": ["iam:CreateServiceLinkedRole"],
+    "Resource": ["*"],
+    "Condition": {
+      "StringEquals": {
+        "iam:AWSServiceName": [
+          "autoscaling.amazonaws.com",
+          "ec2scheduled.amazonaws.com",
+          "elasticloadbalancing.amazonaws.com",
+          "spot.amazonaws.com",
+          "spotfleet.amazonaws.com",
+          "transitgateway.amazonaws.com"
+        ]
+      }
+    }
+  },
+  {
+    "Action": [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds",
+      "secretsmanager:PutSecretValue",
+      "secretsmanager:UpdateSecret",
+      "secretsmanager:TagResource",
+      "secretsmanager:UntagResource"
+    ],
+    "Resource": [
+      "arn:aws:secretsmanager:us-east-1:283800059490:secret:ebs_dev-YKX9Yg"
+    ]
+  },
+  {
+    "Action": ["kms:Decrypt"],
+    "Resource": ["arn:aws:kms:*:283800059490:key/*"]
   }
 ]

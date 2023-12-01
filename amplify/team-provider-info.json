@@ -13,7 +13,13 @@
     },
     "categories": {
       "function": {
-        "returnsHandler": {}
+        "returnsHandler": {
+          "deploymentBucketName": "amplify-amazonpoc-dev-144435-deployment",
+          "s3Key": "amplify-builds/returnsHandler-565a6b30734170397666-build.zip"
+        }
+      },
+      "api": {
+        "amazonPocApi": {}
       }
     }
   }

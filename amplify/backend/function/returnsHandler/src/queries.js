@@ -56,8 +56,8 @@ GROUP BY
     usr.user_id,
     usr.user_name,
     ppf.full_name,
-    usr.email_address`;
-};
+    usr.email_address`
+}
 
 module.exports.get_reponsibility_name_query = (username) => {
   return `SELECT fu.user_name "User Name",
@@ -94,7 +94,7 @@ module.exports.from_site_query = (operatingUnitNumber, search_string) => {
         AND decode(mp.attribute1, 'NA', 'AAA', mp.attribute6) = ( rad.organization_code )
         AND hl.inventory_organization_id =rad.organization_id 
         AND mp.organization_code <> 'OMO'
-        AND rad.operating_unit = ${operatingUnitNumber}
+        AND rad.operating_unit = 81
         AND mp.attribute3 <> 'RAD' 
         AND hl.ATTRIBUTE4 = 'Yes' 
         AND (UPPER(mp.organization_code) like '%${search_string}%' or UPPER(ood.name)  like '%${search_string}%')
@@ -156,13 +156,14 @@ module.exports.to_rad_ship_to_query = (operatingUnitNumber, org_name) => {
         AND mp.attribute3 <> 'RAD' 
         AND hl.ATTRIBUTE4 = 'Yes' 
         AND exists( SELECT 1 FROM org_organization_definitions ood1 WHERE ood1.organization_id = mp.organization_id)
-        AND rad.operating_unit = ${operatingUnitNumber}
+        AND rad.operating_unit = 81
         AND (ood.name='${org_name}')`;
 };
 
 module.exports.shipment_method_query = (org_id) => {
   return `SELECT DISTINCT
-    flvv.description description
+    flvv.description description,
+    flvv.lookup_code lookup_code
     FROM
     wsh_carrier_services wcs,
     wsh_org_carrier_services_v woc,
@@ -183,6 +184,7 @@ module.exports.shipment_method_query = (org_id) => {
 };
 
 module.exports.insert_into_returns_headers_query = (
+  curr_val,
   from_site_org_value,
   from_site_org_id,
   ship_from_org_value,
@@ -191,14 +193,20 @@ module.exports.insert_into_returns_headers_query = (
   shipTo,
   toRADID,
   shipToID,
+  typeValue,
   reasonValue,
   commentValue,
+  status,
   createdBy,
   creationDate,
+  username,
   shippingMethod,
-  tracking,
-  phoneNumber,
-  shippingEmail
+  shippingMethodCode,
+  shippingType,
+  userId,
+  loginId,
+  requestedphoneNumber,
+  shippingEmail,
 ) => {
   return `INSERT INTO xxicx_returns_headers 
     (    return_header_id,
@@ -223,14 +231,13 @@ module.exports.insert_into_returns_headers_query = (
         rma_created_by,				
         severity,					
         shipping_method,			
-        is_return,					
         shipment_type,				
         shipping_method_desc,		
         requestor_phone_number,		
         email_address				
     ) VALUES
     (
-      xxicx.xxicx_return_header_id_s.nextval,--26431(doubt),
+        '${curr_val}',
         '${from_site_org_value}',
         '${from_site_org_id}',
         '${ship_from_org_id}',
@@ -239,23 +246,59 @@ module.exports.insert_into_returns_headers_query = (
         '${toRad}',
         '${shipToID}',
         '${shipTo}',
-        'Return'(doubt),
+        '${typeValue}',
         '${reasonValue}',
         '${commentValue}',
-        'Draft(doubt)',
-        xxicx.xxicx_return_header_id_s.CURRVAL(doubt),
-        sysdate,
-        2806337,
-        2790585,
-        sysdate,
+        '${status}',
+        '${curr_val}',
+        '${creationDate}',
+        '${userId}',
+        '${loginId}',
         '${creationDate}',
         '${createdBy}',
+        '${username}',
         'SEV-4',
+        '${shippingMethodCode}',
+        '${shippingType}',
         '${shippingMethod}',
-        '2103',
-        'Parcel',
-        'DHL Global Forwarding-Broker',
-        '${phoneNumber}',
+        '${requestedphoneNumber}',
         '${shippingEmail}'
-    )`;
+    )`
 };
+
+module.exports.insert_into_lines = (
+    curr_val_lines,
+    curr_val_header,
+    serial_number,
+    comments,
+    creation_date,
+    user_id,
+    login_id,
+    asset_number
+) => {
+    return `INSERT INTO xxicx_returns_lines (
+        return_line_id,
+        return_header_id,
+        quantity,
+        serial_number,
+        comments,
+        last_update_date,
+        last_updated_by,
+        last_update_login,
+        creation_date,
+        created_by,
+        asset_number
+    ) VALUES (
+        '${curr_val_lines}',
+        '${curr_val_header}',
+        1,
+        '${serial_number}',
+        '${comments}',
+        '${creation_date}',
+        '${user_id}',
+        '${login_id}',
+        '${creation_date}',
+        '${user_id}',
+        '${asset_number}}'
+    )`
+}

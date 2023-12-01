@@ -37,8 +37,10 @@ const SignIn = (props) => {
     let response;
     console.log("user name is ", props.userName);
     try{
-      response = await axios.post('http://localhost:3000/amazonpoc/returns/getOperatingUnitNumber', { username: props.userName.toUpperCase() })
+      response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/getOperatingUnitNumber', { username: props.userName.toUpperCase() })
       const data = response.data
+      props.setUserId(data.user_id)
+      props.loginId(data.login_id)
       if(data.op_unit_number){
         props.setOperatingUnitNumber(data.op_unit_number)
       }

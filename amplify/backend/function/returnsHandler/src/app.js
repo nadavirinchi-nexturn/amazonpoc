@@ -5,17 +5,16 @@ const {
   shipment_method_query,
   get_operating_unit_query,
   to_rad_ship_to_query,
+  insert_into_returns_headers_query,
+  insert_into_lines
 } = require("./queries");
 const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
-const path = require("node:path");
 
 const oracledb = require("oracledb");
 
-oracledb.initOracleClient({
-  libDir: path.resolve("node_modules", "instantclient_21_12"),
-});
+oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
 
 const connectDB = async (req, res, next) => {
   try {
@@ -50,12 +49,13 @@ app.post("/amazonpoc/returns/getOperatingUnitNumber", async (req, res) => {
   const getResponsibilityNameQuery = get_reponsibility_name_query(username);
   try {
     let oun_data = await req.dbConnection.execute(getOperatingUnitNumberQuery);
-    let responsibility_name = await req.dbConnection.execute(
-      getResponsibilityNameQuery
-    );
+    let responsibility_name = await req.dbConnection.execute(getResponsibilityNameQuery);
+    let login_id_data = await req.dbConnection.execute(`SELECT login_id FROM FND_LOGINS WHERE user_id=${oun_data.rows[0][0]}`)
     res.status(200).json({
+      user_id: oun_data.rows[0][0],
       op_unit_number: oun_data.rows[0][3],
-      responsibility: responsibility_name.rows[0][1],
+      login_id: login_id_data.rows,
+      responsibility: responsibility_name.rows[0][1]
     });
     await req.dbConnection.close();
   } catch (err) {
@@ -95,16 +95,14 @@ app.post("/amazonpoc/returns/shipFromAddress", async function (req, res) {
   let shippingMethods_Api_query = shipment_method_query(org_id);
   try {
     let ship_from_data = await req.dbConnection.execute(ship_from_api_query);
-    let to_rad_ship_to_data = await req.dbConnection.execute(
-      to_rad_ship_to_api_query
-    );
-    let shipping_methods_data = await req.dbConnection.execute(
-      shippingMethods_Api_query
-    );
+    let to_rad_ship_to_data = await req.dbConnection.execute(to_rad_ship_to_api_query);
+    let shipping_methods_data = await req.dbConnection.execute(shippingMethods_Api_query);
     let processed_Addresses = ship_from_data.rows.map((row) => {
       return { ship_from_org_value: row[0], ship_from_org_id: row[1] };
     });
-    let shipping_methods = shipping_methods_data.rows.map((row) => row[0]);
+    let shipping_methods = shipping_methods_data.rows.map((row) => {
+      return { shipping_method_code: row[1], shipping_method: row[0] }
+    });
     res.json({
       success: "get call succeed!",
       addresses: processed_Addresses,
@@ -121,10 +119,72 @@ app.post("/amazonpoc/returns/shipFromAddress", async function (req, res) {
   }
 });
 
-// app.post("/amazonpoc/returns/shipFromAddress", async (req, res) => {
-//   { "from_site_org_value" } : req.body
+app.post("/amazonpoc/returns/saveHeaders", async (req, res) => {
+  let next_val_header = await req.dbConnection.execute('SELECT XXICX.XXICX_RETURN_header_ID_S.NEXTVAL FROM dual')
+  let curr_val_header = await req.dbConnection.execute('SELECT XXICX.XXICX_RETURN_header_ID_S.CURRVAL FROM dual')
 
-// })
+  let ship_to = req.body.shipTo.replace(/'/g, "''")
+
+  let insert_into_returns_headers_api_query = insert_into_returns_headers_query(
+    curr_val_header.rows[0][0],
+    req.body.fromSiteValue.org_value,
+    req.body.fromSiteValue.org_id,
+    req.body.shipFromAddressValue.ship_from_org_value,
+    req.body.shipFromAddressValue.ship_from_org_id,
+    req.body.toRad,
+    ship_to,
+    req.body.toRADID,
+    req.body.shipToID,
+    req.body.typeValue,
+    req.body.reasonValue,
+    req.body.commentValue,
+    req.body.status,
+    req.body.createdBy,
+    req.body.creationDate,
+    req.body.shippingMethod.shipping_method,
+    req.body.shippingMethod.shipping_method_code,
+    req.body.shippingType,
+    req.body.userId,
+    req.body.loginId,
+    req.body.requestedphoneNumber,
+    req.body.shippingEmail
+  );
+  let lines = req.body.lines;
+  console.log('lines', lines)
+  try{
+    await req.dbConnection.execute(insert_into_returns_headers_api_query)
+    let fetch_headers_by_id = await req.dbConnection.execute(`SELECT * FROM xxicx_returns_headers WHERE return_header_id='${curr_val_header.rows[0][0]}'`)
+    lines.map(async (line) => {
+      let next_val_lines = await req.dbConnection.execute('SELECT XXICX.XXICX_RETURN_LINE_ID_S.NEXTVAL FROM dual')
+      let insert_into_lines_api_query = insert_into_lines(
+        next_val_lines.rows[0][0],
+        curr_val_header.rows[0][0],
+        line.serial_number,
+        line.comments,
+        req.body.creationDate,
+        req.body.userId,
+        req.body.loginId,
+        line.asset_number
+      )
+      console.log('insert_into_lines_api_query', insert_into_lines_api_query)
+      await req.dbConnection.execute(insert_into_lines_api_query)
+      await req.dbConnection.commit()
+    })
+    await req.dbConnection.commit()
+    console.log(`SELECT * FROM xxicx_returns_lines WHERE return_header_id='${curr_val_header.rows[0][0]}'`)
+    let fetch_lines_by_id = await req.dbConnection.execute(`SELECT * FROM xxicx_returns_lines WHERE return_header_id='${curr_val_header.rows[0][0]}'`)
+    res.status(200).json({ 
+      fetch_headers_by_id: fetch_headers_by_id, 
+      fetch_lines_by_id: fetch_lines_by_id,
+      curr_val_header: curr_val_header, 
+      next_val_header: next_val_header,
+    })
+    await req.dbConnection.close()
+  }catch(err){
+    console.log('error', err)
+    res.status(502).json({ message: 'Get call failed!!', error: err })
+  }
+})
 
 app.listen(3000, function () {
   console.log("App started");

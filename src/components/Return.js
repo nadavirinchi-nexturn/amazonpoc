@@ -75,17 +75,14 @@ const Return = (props) => {
   const [rowModesModel, setRowModesModel] = React.useState({});
 
   const [shipFromSite, setShipFromSite] = React.useState([]);
-  const [fromSiteValue, setFromSiteValue] = React.useState({
-    org_value: "",
-    org_id: "",
-  });
+  const [fromSiteValue, setFromSiteValue] = React.useState({ org_value: "", org_id: "" });
   const [fromSiteTextValue, setFromSiteTextValue] = React.useState("");
 
   const [orgId, setOrgId] = React.useState("");
   const [orgValue, setOrgValue] = React.useState("");
 
   const [shipFromAddresses, setShipFromAddresses] = React.useState([]);
-  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState("");
+  const [shipFromAddressValue, setShipFromAddresseValue] = React.useState({ ship_from_org_value: '', ship_from_org_id: '' });
   const [toRad, setToRad] = React.useState("");
   const [toRadID, setToRadID] = React.useState("");
   const [shipTo, setShipTo] = React.useState("");
@@ -93,39 +90,48 @@ const Return = (props) => {
 
   const [typeValue, setTypeValue] = React.useState("return");
   const [reasonValue, setReasonValue] = React.useState("");
+  const [status, setStatus] = React.useState('Draft')
 
   const [commentValue, setCommentValue] = React.useState("");
   const [returnReqValue, setReturnReqValue] = React.useState("");
-  const [createdBy, setCreatedBy] = React.useState(
-    props.userName.toUpperCase()
-  );
-  const [creationDate, setCreationDate] = React.useState(
-    moment(Date.now()).format("DD_MMM_YYYY")
-  );
+  const [createdBy, setCreatedBy] = React.useState( props.userName.toUpperCase());
+  const [creationDate, setCreationDate] = React.useState(moment(Date.now()).format("DD_MMM_YYYY"));
 
   const [shipmentMethods, setShipmentMethods] = React.useState([]);
-  const [shippingMethod, setShippingMethod] = React.useState("");
+  const [shippingMethod, setShippingMethod] = React.useState({shipping_method_code: '', shipping_method: ''});
   const [tracking, setTracking] = React.useState("");
-  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [requestedphoneNumber, setReqiuestedPhoneNumber] = React.useState("");
   const [shippingEmail, setShippingEmail] = React.useState("");
+  const [shippingType, setShippingType] = React.useState('')
 
-  const handleonCLickSubmit = () => {};
+  const handleonCLickSubmit = () => {
+    console.log('rowa', rows)
+  };
   const handleOnCLickCancel = () => {};
-  const handleOnClickSave = () => {
-    console.log("fromSiteValue", fromSiteValue);
-    console.log("shipFromAddressValue", shipFromAddressValue);
-    console.log("toRad", toRad);
-    console.log("shipTo", shipTo);
-    console.log("toRADID", toRadID);
-    console.log("shipToID", shipToID);
-    console.log("reasonValue", reasonValue);
-    console.log("commentValue", commentValue);
-    console.log("createdBy", createdBy);
-    console.log("creationDate", creationDate);
-    console.log("shippingMethod", shippingMethod);
-    console.log("tracking", tracking);
-    console.log("phoneNumber", phoneNumber);
-    console.log("shippingEmail", shippingEmail);
+  const handleOnClickSave = async () => {
+    let data = await axios.post("http://localhost:3000/amazonpoc/returns/saveHeaders", {
+      fromSiteValue: fromSiteValue,
+      shipFromAddressValue: shipFromAddressValue,
+      toRad: toRad,
+      toRadID: toRadID,
+      shipTo: shipTo,
+      shipToID: shipToID,
+      typeValue: typeValue,
+      reasonValue: reasonValue,
+      commentValue: commentValue,
+      status: status,
+      createdBy: '1484',
+      creationDate: creationDate,
+      shippingMethod: shippingMethod,
+      shippingType: shippingType,
+      userId: '1484',
+      loginId: 1234,
+      userName: 'BCOLDREN',
+      requestedphoneNumber: requestedphoneNumber,
+      shippingEmail: shippingEmail,
+      lines: rows
+    })
+    console.log('data', data)
   };
 
   const handleRowEditStop = (params, event) => {
@@ -170,7 +176,7 @@ const Return = (props) => {
 
   const columns = [
     {
-      field: "serial",
+      field: "serial_number",
       headerName: "Serial",
       width: 340,
       editable: true,
@@ -178,7 +184,7 @@ const Return = (props) => {
       // headerAlign: "center",
     },
     {
-      field: "asset",
+      field: "asset_number",
       headerName: "Asset",
       // headerAlign: "center",
       width: 300,
@@ -187,7 +193,7 @@ const Return = (props) => {
       // align: "center",
     },
     {
-      field: "comment",
+      field: "comments",
       headerName: "Comments",
       width: 320,
       fullWidth: true,
@@ -652,6 +658,7 @@ const Return = (props) => {
                 },
               }}
               options={shipmentMethods}
+              getOptionLabel={(shipmentMethods => shipmentMethods.shipping_method)}
               value={shippingMethod}
               onChange={(event, newValue) => {
                 setShippingMethod(newValue);
@@ -693,17 +700,13 @@ const Return = (props) => {
               </InputLabel>
 
               <Select
-                labelId="demo-simple-select-ship-type"
-                id="demo-simple-select-ship-type"
-                // value={"10"}
+                value={shippingType}
                 label="Shipping Type *"
                 InputLabelProps={{ shrink: true }}
-                // onChange={handleChange}
-                required={true}
+                onChange={(e) => setShippingType(e.target.value)}
               >
-                <MenuItem value={10}>Free text</MenuItem>
-                <MenuItem value={20}>Free text</MenuItem>
-                <MenuItem value={30}>Free text</MenuItem>
+                <MenuItem value='Parcel'>Parcel</MenuItem>
+                <MenuItem value='Pallet'>Pallet</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -712,8 +715,8 @@ const Return = (props) => {
             <TextField
               label="Requested Phone Number"
               variant="outlined"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              value={requestedphoneNumber}
+              onChange={(e) => setReqiuestedPhoneNumber(e.target.value)}
               inputLabelProps={{ style: { color: "black" } }}
               sx={{
                 width: "100%",
