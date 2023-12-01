@@ -257,7 +257,7 @@ const Return = (props) => {
 
   const handleAddNewLine = () => {
     setLineData((oldRecord) => [
-      { serial: "", asset: "", comment: "" },
+      { serial_number: "", asset_number: "", comments: "" },
       ...oldRecord,
     ]);
   };
