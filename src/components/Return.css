@@ -4,7 +4,7 @@
   padding: 2px;
   box-sizing: border-box;
   /* margin: 2px; */
-  /* background-color: brown; */
+  /* background-color: #CDF5FD; */
 }
 
 .banner-container {
@@ -13,6 +13,7 @@
   background-image: url("../images/header_back.png");
   background-repeat: no-repeat;
   background-size: cover;
+  /* background: #132043; */
   /* border: 10px solid red; */
   padding: 10px;
 }

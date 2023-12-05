@@ -59,25 +59,27 @@ GROUP BY
     usr.email_address`
 }
 
-module.exports.get_reponsibility_name_query = (username) => {
-  return `SELECT fu.user_name "User Name",
-    frt.responsibility_name "Responsibility Name"
-    FROM fnd_user_resp_groups_direct  furg,
-        applsys.fnd_user              fu,
-        applsys.fnd_responsibility_tl frt,
-        applsys.fnd_responsibility    fr,
-        applsys.fnd_application_tl    fat,
-        applsys.fnd_application       fa
-    WHERE furg.user_id           =  fu.user_id
-    AND furg.responsibility_id   =  frt.responsibility_id
-    AND fr.responsibility_id     =  frt.responsibility_id
-    AND fa.application_id        =  fat.application_id
-    AND fr.application_id        =  fat.application_id
-    AND frt.language             =  USERENV('LANG')
-    AND UPPER(fu.user_name)      =  UPPER('${username}')
-    and  frt.responsibility_name =  'US - A2Z OTS One Stop Shop'
-    AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))`;
+module.exports.get_reponsibility_name_query = (user_id) => {
+  return `SELECT * FROM xxmb_resp_user_v WHERE user_id = ${user_id} AND UPPER(Responsibility_Name) LIKE '%ONE STOP SHOP%'`
 };
+
+// SELECT fu.user_name "User Name",
+//     frt.responsibility_name "Responsibility Name"
+//     FROM fnd_user_resp_groups_direct  furg,
+//         applsys.fnd_user              fu,
+//         applsys.fnd_responsibility_tl frt,
+//         applsys.fnd_responsibility    fr,
+//         applsys.fnd_application_tl    fat,
+//         applsys.fnd_application       fa
+//     WHERE furg.user_id           =  fu.user_id
+//     AND furg.responsibility_id   =  frt.responsibility_id
+//     AND fr.responsibility_id     =  frt.responsibility_id
+//     AND fa.application_id        =  fat.application_id
+//     AND fr.application_id        =  fat.application_id
+//     AND frt.language             =  USERENV('LANG')
+//     AND UPPER(fu.user_name)      =  UPPER('${username}')
+//     and  frt.responsibility_name =  'US - A2Z OTS One Stop Shop'
+//     AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))
 
 module.exports.from_site_query = (operatingUnitNumber, search_string) => {
   return `SELECT

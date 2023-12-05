@@ -14,7 +14,7 @@ const awsServerlessExpressMiddleware = require("aws-serverless-express/middlewar
 
 const oracledb = require("oracledb");
 
-oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
+// oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
 
 const connectDB = async (req, res, next) => {
   try {
@@ -46,16 +46,17 @@ app.use(connectDB);
 app.post("/amazonpoc/returns/getOperatingUnitNumber", async (req, res) => {
   const username = req.body.username;
   const getOperatingUnitNumberQuery = get_operating_unit_query(username);
-  const getResponsibilityNameQuery = get_reponsibility_name_query(username);
   try {
     let oun_data = await req.dbConnection.execute(getOperatingUnitNumberQuery);
+    let user_id = oun_data.rows[0][0]
+    const getResponsibilityNameQuery = get_reponsibility_name_query(user_id);
     let responsibility_name = await req.dbConnection.execute(getResponsibilityNameQuery);
-    let login_id_data = await req.dbConnection.execute(`SELECT login_id FROM FND_LOGINS WHERE user_id=${oun_data.rows[0][0]}`)
+    let login_id_data = await req.dbConnection.execute(`SELECT login_id FROM FND_LOGINS WHERE user_id=${user_id}`)
     res.status(200).json({
-      user_id: oun_data.rows[0][0],
+      user_id: user_id,
       op_unit_number: oun_data.rows[0][3],
-      login_id: login_id_data.rows,
-      responsibility: responsibility_name.rows[0][1]
+      login_id: login_id_data,
+      responsibility: responsibility_name.rows[0][2]
     });
     await req.dbConnection.close();
   } catch (err) {
@@ -174,15 +175,34 @@ app.post("/amazonpoc/returns/saveHeaders", async (req, res) => {
     console.log(`SELECT * FROM xxicx_returns_lines WHERE return_header_id='${curr_val_header.rows[0][0]}'`)
     let fetch_lines_by_id = await req.dbConnection.execute(`SELECT * FROM xxicx_returns_lines WHERE return_header_id='${curr_val_header.rows[0][0]}'`)
     res.status(200).json({ 
-      fetch_headers_by_id: fetch_headers_by_id, 
-      fetch_lines_by_id: fetch_lines_by_id,
-      curr_val_header: curr_val_header, 
-      next_val_header: next_val_header,
+      fetch_headers_by_id: fetch_headers_by_id.rows, 
+      fetch_lines_by_id: fetch_lines_by_id.rows,
+      curr_val_header: curr_val_header.rows, 
+      next_val_header: next_val_header.rows,
     })
     await req.dbConnection.close()
   }catch(err){
     console.log('error', err)
     res.status(502).json({ message: 'Get call failed!!', error: err })
+  }
+})
+
+app.post('/amazonpoc/returns/submitAll', async (req, res) => {
+  let submit_api_query = `BEGIN xxmb_submit_action(:id , :name);END;`
+  const binds = {
+    id: req.body.header_id,
+    name: req.body.userName
+  };
+  const options = {
+    outFormat: oracledb.OUT_FORMAT_OBJECT
+  };
+  try{
+    let submit_data = await req.dbConnection.execute(submit_api_query, binds, options)
+    res.status(201).json({ submitted_data: submit_data })
+    await req.dbConnection.close()
+  }catch(err){
+    console.log('error', err)
+    res.status(500).json({ error: err })
   }
 })
 

@@ -80,9 +80,7 @@ const Return = (props) => {
   const [createdBy, setCreatedBy] = React.useState(
     props.userName.toUpperCase()
   );
-  const [creationDate, setCreationDate] = React.useState(
-    moment(Date.now()).format("DD_MMM_YYYY")
-  );
+  const [creationDate, setCreationDate] = React.useState(moment(Date.now()).format("DD-MMM-YYYY"));
 
   const [shipmentMethods, setShipmentMethods] = React.useState([]);
   const [shippingMethod, setShippingMethod] = React.useState({
@@ -101,9 +99,7 @@ const Return = (props) => {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState("");
 
-  const handleonCLickSubmit = () => {
-    console.log("line Data", lineData);
-  };
+  const handleonCLickSubmit = () => {};
   const handleOnCLickCancel = () => {};
   const handleOnClickSave = async () => {
     if (fromSiteValue.org_id === "") {
@@ -465,7 +461,7 @@ const Return = (props) => {
                 style: {
                   fontSize: "16px",
                   fontWeight: "700",
-                  fontFamily: "GilroyLight",
+                  fontFamily: "Gilroy",
                 },
               }}
             />

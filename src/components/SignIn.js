@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, Button, TextField, Backdrop, CircularProgress, Snackbar, Alert } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Slide, { SlideProps } from '@mui/material/Slide';
+import Slide from '@mui/material/Slide';
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -40,7 +40,6 @@ const SignIn = (props) => {
       response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/getOperatingUnitNumber', { username: props.userName.toUpperCase() })
       const data = response.data
       props.setUserId(data.user_id)
-      props.loginId(data.login_id)
       if(data.op_unit_number){
         props.setOperatingUnitNumber(data.op_unit_number)
       }
@@ -129,14 +128,6 @@ const SignIn = (props) => {
               backgroundColor: "#ffffff",
               borderRadius: "5px",
               marginTop: "30px",
-              // "& .MuiOutlinedInput-root": {
-              //   "&.Mui-focused fieldset": {
-              //     borderColor: "#F9A500",
-              //   },
-              // },
-              // "&.Mui-focused .MuiOutlinedInput-root": {
-              //   paddingRight: "10px!important",
-              // },
             }}
           />
           <Button
