@@ -459,15 +459,15 @@ const ReturnForm = (props) => {
                     )}
                 />
             </Stack>
-            <Stack direction='row' alignItems='center' width='25%' justifyContent='space-around'>
+            <Stack alignItems='center' width='25%' justifyContent='space-around'>
                 <Typography fontFamily='Gilroy' color='white'>Equipments Return to RAD</Typography>
                 <Box sx={{ background: '#FFBB5C', padding: '1%', borderRadius: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100px' }}>
                     <Typography fontFamily='Gilroy' color='#131921' fontWeight='1000'>Draft</Typography>
                 </Box>
             </Stack>
         </Box>
-        <Stack direction='row' width='100%' justifyContent='space-around' marginTop='2%'>
-            <Paper sx={{ width: '45%', padding: '1%'}}>
+        <Stack direction='column' width='100%' justifyContent='center' alignItems='center' marginTop='2%'>
+            <Paper sx={{ width: '90%', padding: '1%'}}>
                 <Grid container columnSpacing={2} rowSpacing={2} xs={12}>
                     <Grid item xs={12}>
                         <RadioGroup
@@ -665,7 +665,7 @@ const ReturnForm = (props) => {
                     </Grid>
                 </Grid>
             </Paper>
-            <Paper sx={{ width: '45%', padding: '1%' }}>
+            <Paper sx={{ width: '90%', padding: '1%', marginTop: '2%' }}>
                 <Grid container columnSpacing={2} rowSpacing={2}>
                     <Grid item xs={12} marginBottom='1%'>
                         <Typography fontFamily='Gilroy'> Shipment Details</Typography>

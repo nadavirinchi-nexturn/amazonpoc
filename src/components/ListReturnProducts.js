@@ -89,19 +89,20 @@ const ListReturnProducts = () => {
       <Box className="main-banner-container">
         <Stack direction={"row"}>
           <Stack direction={"row"} m={3}>
-            <img
+            {/* <img
               src={boxImage}
               alt="return RAD"
               sx={{ padding: "2px" }}
               width={"22px"}
               height={"22px"}
-            />
+            /> */}
             <Typography
               sx={{
                 fontWeight: "650",
                 fontFamily: "GilroyDark",
                 fontSize: 18,
                 paddingLeft: "10px",
+                color: 'white'
               }}
             >
               Returns RAD{" "}
@@ -118,6 +119,7 @@ const ListReturnProducts = () => {
               id="ReqNumber-txtfield"
               placeholder="Request Number"
               variant="outlined"
+              size="small"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -146,6 +148,7 @@ const ListReturnProducts = () => {
               id="FData-txtfield"
               placeholder="From Date"
               variant="outlined"
+              size="small"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
@@ -173,6 +176,7 @@ const ListReturnProducts = () => {
               id="TDate-txtfield"
               placeholder="To Date"
               variant="outlined"
+              size="small"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
@@ -202,6 +206,7 @@ const ListReturnProducts = () => {
               id="CreatedBy-txtfield"
               placeholder="Created by"
               variant="outlined"
+              size="small"
               InputProps={
                 {
                   // startAdornment: (
@@ -241,6 +246,7 @@ const ListReturnProducts = () => {
                 fontWeight: "650",
                 fontFamily: "GilroyLight",
                 fontSize: 18,
+                color: 'white'
               }}
             >
               Return List
@@ -447,7 +453,7 @@ const ListReturnProducts = () => {
                       fontWeight: "550",
                     }}
                   >
-                    Rqst#
+                    Request #
                   </TableCell>
                   <TableCell
                     sx={{
@@ -492,7 +498,7 @@ const ListReturnProducts = () => {
                       fontWeight: "550",
                     }}
                   >
-                    Created Info
+                    Created By
                   </TableCell>
                   <TableCell
                     sx={{
@@ -501,11 +507,19 @@ const ListReturnProducts = () => {
                       fontWeight: "550",
                     }}
                   >
-                    Line#
+                    Line Items
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "#7B7E94",
+                      fontSize: "14px",
+                      fontWeight: "550",
+                    }}
+                  >
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+              {/* <TableBody>
                 {rows.map((row) => (
                   <TableRow
                     key={row.rqst}
@@ -576,7 +590,7 @@ const ListReturnProducts = () => {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
+              </TableBody> */}
             </Table>
           </TableContainer>
         </Box>

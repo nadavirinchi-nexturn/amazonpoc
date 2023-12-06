@@ -10,9 +10,7 @@
 .main-banner-container {
   /* width: 100vw; */
   height: 40vh;
-  background-image: url("../images/header_back.png");
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: #131921;
   /* border: 10px solid red; */
   padding: 10px;
 }
