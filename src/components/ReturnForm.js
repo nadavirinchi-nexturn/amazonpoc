@@ -39,6 +39,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormLabel from "@mui/material/FormLabel";
+import { useNavigate } from "react-router-dom";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -46,11 +47,13 @@ function SlideTransition(props) {
 
 const ReturnForm = (props) => {
 
+    const navigate = useNavigate()
+
     const [lineData, setLineData] = React.useState([])
     const [state, setState] = React.useState({
         toRad: '',
         shipTo: '',
-        typeValue: 'return',
+        typeValue: 'Return',
         reasonValue: '',
         commentValue: '',
         status: 'New',
@@ -162,6 +165,7 @@ const ReturnForm = (props) => {
     } catch (err) {
       console.log("error", err);
     }
+    window.scrollTo(0, 0)
     setState((prevState) => ({
       ...prevState,
       openBackdrop: false,
@@ -171,6 +175,13 @@ const ReturnForm = (props) => {
   const handleOnCLickCancel = () => {
     console.log("state", state);
     console.log("lineData", lineData);
+    setState(prevState => ({
+        ...prevState,
+        openBackdrop: true
+    }))
+    setTimeout(() => {
+        navigate('/list')
+    }, 2000)
   };
 
   const handleOnClickSave = async () => {
@@ -243,14 +254,14 @@ const ReturnForm = (props) => {
     }));
 
     let headers_data = await axios.post(
-      "https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/saveHeaders",
+      "http://localhost:3000/amazonpoc/returns/saveHeaders",
       {
         fromSiteValue: state.fromSiteValue,
         shipFromAddressValue: state.shipFromAddressValue,
         toRad: state.toRad,
-        toRadID: state.toRadID,
+        toRadID: state.toRadId,
         shipTo: state.shipTo,
-        shipToID: state.shipToID,
+        shipToID: state.shipToId,
         typeValue: state.typeValue,
         reasonValue: state.reasonValue,
         commentValue: state.commentValue,
@@ -264,9 +275,11 @@ const ReturnForm = (props) => {
         userName: props.userName,
         requestedphoneNumber: state.requestedphoneNumber,
         shippingEmail: state.shippingEmail,
+        tracking: state.tracking,
         lines: lineData,
       }
     );
+    window.scrollTo(0, 0)
     setState((prevState) => ({
       ...prevState,
       returnReqValue: headers_data.data.curr_val_header[0][0],
@@ -416,6 +429,7 @@ const ReturnForm = (props) => {
                 fontFamily="Gilroy"
                 fontWeight={"600"}
                 color="white"
+                fontSize='2rem'
             >
                 Equipments Return to RAD
             </Typography>
@@ -425,7 +439,7 @@ const ReturnForm = (props) => {
                     fontWeight={"600"}
                     color="white"
                 >
-                    Request Id : 
+                    Oracle Job: 
                 </Typography>
                 <Typography
                     fontFamily="Gilroy"
@@ -596,7 +610,7 @@ const ReturnForm = (props) => {
               >
                 <FormControlLabel
                   disabled={state.submitBtnClicked}
-                  value="return"
+                  value="Return"
                   control={<Radio size="small" />}
                   label={
                     <Typography
@@ -610,7 +624,7 @@ const ReturnForm = (props) => {
                 />
                 <FormControlLabel
                   disabled={state.submitBtnClicked}
-                  value="repair"
+                  value="Repair"
                   control={<Radio size="small" />}
                   label={
                     <Typography
@@ -1177,7 +1191,6 @@ const ReturnForm = (props) => {
               },
             }}
             variant="contained"
-            disabled={state.submitBtnClicked}
             onClick={handleOnCLickCancel}
           >
             Cancel

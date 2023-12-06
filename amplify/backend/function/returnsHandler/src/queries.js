@@ -190,7 +190,8 @@ module.exports.insert_into_returns_headers_query = (
     userId,
     loginId,
     requestedphoneNumber,
-    shippingEmail
+    shippingEmail,
+    tracking
 ) => {
   return `INSERT INTO xxicx_returns_headers 
     (   return_header_id,
@@ -218,7 +219,8 @@ module.exports.insert_into_returns_headers_query = (
         shipment_type,				
         shipping_method_desc,		
         requestor_phone_number,		
-        email_address				
+        email_address,
+        TRACKING_NUMBER				
     ) VALUES
     (
         '${curr_val}',
@@ -246,7 +248,8 @@ module.exports.insert_into_returns_headers_query = (
         '${shippingType}',
         '${shippingMethod}',
         '${requestedphoneNumber}',
-        '${shippingEmail}'
+        '${shippingEmail}',
+        '${tracking}'
     )`
 };
 

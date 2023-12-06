@@ -15,7 +15,7 @@
       "function": {
         "returnsHandler": {
           "deploymentBucketName": "amplify-amazonpoc-dev-144435-deployment",
-          "s3Key": "amplify-builds/returnsHandler-6255463270394f54556c-build.zip"
+          "s3Key": "amplify-builds/returnsHandler-4b4854616e4d6b777936-build.zip"
         }
       },
       "api": {

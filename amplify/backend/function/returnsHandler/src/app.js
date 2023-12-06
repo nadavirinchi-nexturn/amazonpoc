@@ -14,7 +14,7 @@ const awsServerlessExpressMiddleware = require("aws-serverless-express/middlewar
 
 const oracledb = require("oracledb");
 
-// oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
+oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
 
 const connectDB = async (req, res, next) => {
   try {
@@ -133,7 +133,7 @@ app.post("/amazonpoc/returns/saveHeaders", async (req, res) => {
     req.body.shipFromAddressValue.ship_from_org_value,
     req.body.shipFromAddressValue.ship_from_org_id,
     req.body.toRad,
-    req.body.toRADID,
+    req.body.toRadID,
     ship_to,
     req.body.shipToID,
     req.body.typeValue,
@@ -149,8 +149,10 @@ app.post("/amazonpoc/returns/saveHeaders", async (req, res) => {
     req.body.userId,
     req.body.loginId,
     req.body.requestedphoneNumber,
-    req.body.shippingEmail
+    req.body.shippingEmail,
+    req.body.tracking
   );
+  console.log('insert_into_returns_headers_api_query', insert_into_returns_headers_api_query)
   let lines = req.body.lines;
   console.log('lines', lines)
   try{
