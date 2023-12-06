@@ -1177,6 +1177,7 @@ const ReturnForm = (props) => {
               },
             }}
             variant="contained"
+            disabled={state.submitBtnClicked}
             onClick={handleOnCLickCancel}
           >
             Cancel
