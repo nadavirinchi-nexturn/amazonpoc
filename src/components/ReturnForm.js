@@ -1194,7 +1194,7 @@ const ReturnForm = (props) => {
             Save
           </Button>
           <Button
-            disabled={!state.saveBtnClicked}
+            disabled={!state.saveBtnClicked || state.submitBtnClicked}
             sx={{
               marginLeft: "25px",
               background: "#FFBB5C",
