@@ -53,7 +53,7 @@ const ReturnForm = (props) => {
         typeValue: 'return',
         reasonValue: '',
         commentValue: '',
-        status: 'Draft',
+        status: 'New',
         createdBy: props.userName.toUpperCase(),
         returnReqValue: '',
         creationDate: moment(Date.now()).format("DD-MMM-YYYY"),
@@ -76,7 +76,8 @@ const ReturnForm = (props) => {
         shipFromAddressValue: { ship_from_org_value: "", ship_from_org_id: "" },
         openBackdrop: false,
         openSnackbar: false,
-        alertMsg: ''
+        alertMsg: '',
+        return_request_number: ''
     })
 
   const handleChange = (event) => {
@@ -141,20 +142,22 @@ const ReturnForm = (props) => {
       openBackdrop: true,
     }));
     try {
-      await axios.post(
+      const submitted_data = await axios.post(
         "https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/submitAll",
         {
           header_id: state.returnReqValue,
           userName: props.userName.toUpperCase(),
         }
       );
+      let response = submitted_data.data.submitted_data
+      console.log('submitted_data', submitted_data)
       setState((prevState) => ({
         ...prevState,
         openSnackbar: true,
         servityType: "success",
         alertMsg: "Your request is submitted",
         submitBtnClicked: true,
-        status: "Submitted",
+        return_request_number: response.outBinds.p_req_number
       }));
     } catch (err) {
       console.log("error", err);
@@ -251,7 +254,7 @@ const ReturnForm = (props) => {
         typeValue: state.typeValue,
         reasonValue: state.reasonValue,
         commentValue: state.commentValue,
-        status: state.status,
+        status: 'Draft',
         createdBy: props.userId,
         creationDate: state.creationDate,
         shippingMethod: state.shippingMethod,
@@ -272,6 +275,7 @@ const ReturnForm = (props) => {
       alertMsg: "Your request is saved",
       openSnackbar: true,
       saveBtnClicked: true,
+      status: 'Draft'
     }));
   };
 
@@ -348,6 +352,30 @@ const ReturnForm = (props) => {
     }
   }, [state.orgId]);
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+        if (state.return_request_number !== '') {
+          try {
+            const response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/retryForStatus', {
+              header_id: state.returnReqValue
+            });
+            setState(prevState => ({
+              ...prevState,
+              status: response.data.submit_status
+            }));
+            if (response.data.submit_status === 'approved') {
+              clearInterval(intervalId);
+            }
+          } catch (err) {
+            console.log('error retrying for request number', err);
+          }
+        }
+      };
+      fetchData();
+      const intervalId = setInterval(fetchData, 5000);
+      return () => clearInterval(intervalId);
+  }, [state.return_request_number])
+
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
       <Backdrop
@@ -383,30 +411,45 @@ const ReturnForm = (props) => {
           background: "#131921",
         }}
       >
-        <Typography
-          fontFamily="Gilroy"
-          fontSize={"20px"}
-          fontWeight={"600"}
-          color="white"
-          sx={{ paddingTop: "10px", paddingLeft: "20px" }}
-        >
-          Equipments Return to RAD
-        </Typography>
+        <Stack direction='row' justifyContent='space-between' padding='1%'>
+            <Typography
+                fontFamily="Gilroy"
+                fontWeight={"600"}
+                color="white"
+            >
+                Equipments Return to RAD
+            </Typography>
+            <Stack direction='row'>
+                <Typography
+                    fontFamily="Gilroy"
+                    fontWeight={"600"}
+                    color="white"
+                >
+                    Request Id : 
+                </Typography>
+                <Typography
+                    fontFamily="Gilroy"
+                    fontWeight={"600"}
+                    color="white"  
+                    width='100px'
+                >
+                    {state.return_request_number}
+                </Typography>
+            </Stack>
+        </Stack>
         <Stack
           direction={"row"}
           alignItems="center"
           width="25%"
-          marginTop={2}
           justifyContent="space-between"
+          padding='1%'
         >
           <Typography
             fontFamily="Gilroy"
-            // fontSize={"20px"}
             fontWeight={"600"}
             color="white"
-            sx={{ paddingTop: "10px", paddingLeft: "20px" }}
           >
-            Request# : {state.returnReqValue}
+            Request # : {state.returnReqValue}
           </Typography>
           <Box
             sx={{
@@ -662,7 +705,7 @@ const ReturnForm = (props) => {
                 <MenuItem value="Return">Return</MenuItem>
               </Select>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={3}>
               <TextField
                 disabled={state.submitBtnClicked}
                 placeholder="Comment"

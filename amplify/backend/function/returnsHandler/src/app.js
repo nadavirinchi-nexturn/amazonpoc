@@ -189,14 +189,21 @@ app.post("/amazonpoc/returns/saveHeaders", async (req, res) => {
 })
 
 app.post('/amazonpoc/returns/submitAll', async (req, res) => {
-  let submit_api_query = `BEGIN xxmb_submit_action(:id , :name);END;`
+
+  let submit_api_query = `BEGIN xxmb_submit_action(:p_return_header_id, :p_username, :p_req_number, :p_req_status); END;`
+
   const binds = {
-    id: req.body.header_id,
-    name: req.body.userName
-  };
+    p_return_header_id: req.body.header_id,
+    p_username: req.body.userName,
+    p_req_number: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+    p_req_status: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
+  }
+
   const options = {
+    autoCommit: true,
     outFormat: oracledb.OUT_FORMAT_OBJECT
-  };
+  }
+
   try{
     let submit_data = await req.dbConnection.execute(submit_api_query, binds, options)
     res.status(201).json({ submitted_data: submit_data })
@@ -206,6 +213,17 @@ app.post('/amazonpoc/returns/submitAll', async (req, res) => {
     res.status(500).json({ error: err })
   }
 })
+
+app.post('/amazonpoc/returns/retryForStatus', async (req, res) => {
+  const retryForStatus_api_query = `SELECT status FROM xxicx_returns_headers WHERE RETURN_HEADER_ID=${req.body.header_id}`
+  try{
+    const retryForStatus_data = await req.dbConnection.execute(retryForStatus_api_query)
+    res.status(210).json({ submit_status: retryForStatus_data.rows[0][0] })
+  }catch(err){
+    console.log('error', err)
+    res.status(502).json({ error: err })
+  }
+});
 
 app.listen(3000, function () {
   console.log("App started");
