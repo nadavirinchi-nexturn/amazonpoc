@@ -6,6 +6,7 @@ import Return from "./components/Return";
 import SignIn from "./components/SignIn";
 import ListReturnProducts from "./components/ListReturnProducts";
 import ReturnForm from "./components/ReturnForm";
+import ReturnList from "./components/ReturnList";
 
 function App() {
 
@@ -20,7 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SignIn setOperatingUnitNumber={setOperatingUnitNumber} userName={userName} setuserName={setuserName} setUserId={setUserId} setLoginId={setLoginId} />} />
           <Route path="/create" element={<ReturnForm operatingUnitNumber={operatingUnitNumber} userName={userName} userId={userId} />} />
-          <Route path="/list" element={<ListReturnProducts />} />
+          <Route path="/list" element={<ReturnList />} />
         </Routes>
       </Box>
     </BrowserRouter>

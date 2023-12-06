@@ -48,6 +48,7 @@ const ReturnForm = (props) => {
         typeValue: 'return',
         reasonValue: '',
         commentValue: '',
+        status: 'Draft',
         createdBy: props.userName.toUpperCase(),
         returnReqValue: '',
         creationDate: moment(Date.now()).format("DD-MMM-YYYY"),

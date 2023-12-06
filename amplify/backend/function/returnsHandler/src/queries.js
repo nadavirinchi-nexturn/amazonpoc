@@ -63,24 +63,6 @@ module.exports.get_reponsibility_name_query = (user_id) => {
   return `SELECT * FROM xxmb_resp_user_v WHERE user_id = ${user_id} AND UPPER(Responsibility_Name) LIKE '%ONE STOP SHOP%'`
 };
 
-// SELECT fu.user_name "User Name",
-//     frt.responsibility_name "Responsibility Name"
-//     FROM fnd_user_resp_groups_direct  furg,
-//         applsys.fnd_user              fu,
-//         applsys.fnd_responsibility_tl frt,
-//         applsys.fnd_responsibility    fr,
-//         applsys.fnd_application_tl    fat,
-//         applsys.fnd_application       fa
-//     WHERE furg.user_id           =  fu.user_id
-//     AND furg.responsibility_id   =  frt.responsibility_id
-//     AND fr.responsibility_id     =  frt.responsibility_id
-//     AND fa.application_id        =  fat.application_id
-//     AND fr.application_id        =  fat.application_id
-//     AND frt.language             =  USERENV('LANG')
-//     AND UPPER(fu.user_name)      =  UPPER('${username}')
-//     and  frt.responsibility_name =  'US - A2Z OTS One Stop Shop'
-//     AND (furg.end_date IS NULL OR furg.end_date >= TRUNC(SYSDATE))
-
 module.exports.from_site_query = (operatingUnitNumber, search_string) => {
   return `SELECT
         mp.organization_code,
@@ -186,32 +168,32 @@ module.exports.shipment_method_query = (org_id) => {
 };
 
 module.exports.insert_into_returns_headers_query = (
-  curr_val,
-  from_site_org_value,
-  from_site_org_id,
-  ship_from_org_value,
-  ship_from_org_id,
-  toRad,
-  shipTo,
-  toRADID,
-  shipToID,
-  typeValue,
-  reasonValue,
-  commentValue,
-  status,
-  createdBy,
-  creationDate,
-  username,
-  shippingMethod,
-  shippingMethodCode,
-  shippingType,
-  userId,
-  loginId,
-  requestedphoneNumber,
-  shippingEmail,
+    curr_val,
+    from_site_org_value,
+    from_site_org_id,
+    ship_from_org_value,
+    ship_from_org_id,
+    toRad,
+    toRADID,
+    shipTo,
+    shipToID,
+    typeValue,
+    reasonValue,
+    commentValue,
+    status,
+    createdBy,
+    creationDate,
+    username,
+    shippingMethod,
+    shippingMethodCode,
+    shippingType,
+    userId,
+    loginId,
+    requestedphoneNumber,
+    shippingEmail
 ) => {
   return `INSERT INTO xxicx_returns_headers 
-    (    return_header_id,
+    (   return_header_id,
         from_org_name, 				
         from_org,      				
         ship_from_address,			

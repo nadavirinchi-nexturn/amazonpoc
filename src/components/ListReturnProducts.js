@@ -127,25 +127,16 @@ const ListReturnProducts = () => {
                     <SearchIcon />
                   </InputAdornment>
                 ),
-                disableUnderline: true,
               }}
               sx={{
-                width: "200px",
                 backgroundColor: "#ffffff",
-                marginRight: "10px",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
               }}
             />
             <TextField
-              id="FData-txtfield"
               placeholder="From Date"
               variant="outlined"
               size="small"
@@ -156,24 +147,16 @@ const ListReturnProducts = () => {
                     <CalendarMonthIcon />
                   </InputAdornment>
                 ),
-                disableUnderline: true,
               }}
               sx={{
-                width: "200px",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
               }}
             />
             <TextField
-              id="TDate-txtfield"
               placeholder="To Date"
               variant="outlined"
               size="small"
@@ -184,18 +167,11 @@ const ListReturnProducts = () => {
                     <CalendarMonthIcon />
                   </InputAdornment>
                 ),
-                disableUnderline: true,
               }}
               sx={{
                 width: "200px",
                 backgroundColor: "#ffffff",
-                marginRight: "15px",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
@@ -203,31 +179,12 @@ const ListReturnProducts = () => {
             />
 
             <TextField
-              id="CreatedBy-txtfield"
               placeholder="Created by"
               variant="outlined"
               size="small"
-              InputProps={
-                {
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     {" "}
-                  //     <SearchIcon />
-                  //   </InputAdornment>
-                  // ),
-                  // disableUnderline: true,
-                }
-              }
               sx={{
-                width: "200px",
-                marginRight: "20px",
                 backgroundColor: "#ffffff",
                 borderRadius: "5px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    // borderColor: "#F9A500",
-                  },
-                },
                 "&.Mui-focused .MuiOutlinedInput-root": {
                   paddingRight: "10px!important",
                 },
