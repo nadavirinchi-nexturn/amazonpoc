@@ -1,10 +1,19 @@
 import React from "react";
-import { Box, Typography, Button, TextField, Backdrop, CircularProgress, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Slide from '@mui/material/Slide';
+import Slide from "@mui/material/Slide";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
@@ -21,51 +30,63 @@ const SignIn = (props) => {
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-        return;
+    if (reason === "clickaway") {
+      return;
     }
     setOpenSnackbar(false);
     setOpenBackdrop(false);
-};
+  };
 
   const handleSignInBtn = async () => {
-    setOpenBackdrop(true)
-    if(props.userName === ''){
-      setOpenSnackbar(true)
-      return
+    setOpenBackdrop(true);
+    if (props.userName === "") {
+      setOpenSnackbar(true);
+      return;
     }
     let response;
     console.log("user name is ", props.userName);
-    try{
-      response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/getOperatingUnitNumber', { username: props.userName.toUpperCase() })
-      const data = response.data
-      props.setUserId(data.user_id)
-      if(data.op_unit_number){
-        props.setOperatingUnitNumber(data.op_unit_number)
+    try {
+      response = await axios.post(
+        "https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/getOperatingUnitNumber",
+        { username: props.userName.toUpperCase() }
+      );
+      const data = response.data;
+      props.setUserId(data.user_id);
+      if (data.op_unit_number) {
+        props.setOperatingUnitNumber(data.op_unit_number);
       }
-      if(data.responsibility && data.responsibility.toUpperCase().includes('ONE STOP SHOP')){
+      if (
+        data.responsibility &&
+        data.responsibility.toUpperCase().includes("ONE STOP SHOP")
+      ) {
         navigate("/list");
-      }else{
-        setOpenSnackbar(true)
+      } else {
+        setOpenSnackbar(true);
       }
-      setOpenBackdrop(false)
-    }catch(err){
-      console.log('error', err)
+      setOpenBackdrop(false);
+    } catch (err) {
+      console.log("error", err);
+      setOpenSnackbar(true);
+      props.setuserName("");
     }
   };
 
   return (
     <Box>
-      <Snackbar 
-          open={openSnackbar} 
-          autoHideDuration={6000} 
-          onClose={handleCloseSnackbar} 
-          anchorOrigin={{vertical: 'top', horizontal: 'center' }}
-          TransitionComponent={SlideTransition}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        TransitionComponent={SlideTransition}
       >
-          <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
-            User is not Authorized
-          </Alert>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          User is not Authorized
+        </Alert>
       </Snackbar>
       <Backdrop
         sx={{
