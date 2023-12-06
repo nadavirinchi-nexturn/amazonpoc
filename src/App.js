@@ -9,19 +9,38 @@ import ReturnForm from "./components/ReturnForm";
 import ReturnList from "./components/ReturnList";
 
 function App() {
-
-  const [operatingUnitNumber, setOperatingUnitNumber] = React.useState('')
+  const [operatingUnitNumber, setOperatingUnitNumber] = React.useState("");
   const [userName, setuserName] = React.useState("");
-  const [userId, setUserId] = React.useState('')
-  const [loginId, setLoginId] = React.useState('')
+  const [userId, setUserId] = React.useState("");
+  const [loginId, setLoginId] = React.useState("");
 
   return (
     <BrowserRouter>
       <Box className="App">
         <Routes>
-          <Route path="/" element={<SignIn setOperatingUnitNumber={setOperatingUnitNumber} userName={userName} setuserName={setuserName} setUserId={setUserId} setLoginId={setLoginId} />} />
-          <Route path="/create" element={<ReturnForm operatingUnitNumber={operatingUnitNumber} userName={userName} userId={userId} />} />
-          <Route path="/list" element={<ReturnList />} />
+          <Route
+            path="/"
+            element={
+              <SignIn
+                setOperatingUnitNumber={setOperatingUnitNumber}
+                userName={userName}
+                setuserName={setuserName}
+                setUserId={setUserId}
+                setLoginId={setLoginId}
+              />
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <ReturnForm
+                operatingUnitNumber={operatingUnitNumber}
+                userName={userName}
+                userId={userId}
+              />
+            }
+          />
+          <Route path="/list" element={<ReturnList userName={userName} />} />
         </Routes>
       </Box>
     </BrowserRouter>
