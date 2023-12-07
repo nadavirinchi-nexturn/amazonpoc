@@ -7,6 +7,11 @@ import {
   Button,
   CircularProgress,
   ClickAwayListener,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Divider,
   FormControlLabel,
   Grid,
@@ -40,50 +45,55 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormLabel from "@mui/material/FormLabel";
 import { useNavigate } from "react-router-dom";
+import BarcodeScannerComponent from "react-webcam-barcode-scanner";
+import CameraAltTwoToneIcon from "@mui/icons-material/CameraAltTwoTone";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
 }
 
 const ReturnForm = (props) => {
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const [lineData, setLineData] = React.useState([])
+  const [lineData, setLineData] = React.useState([]);
   const [state, setState] = React.useState({
-      toRad: '',
-      shipTo: '',
-      typeValue: 'Return',
-      reasonValue: '',
-      commentValue: '',
-      status: 'New',
-      createdBy: props.userName.toUpperCase(),
-      returnReqValue: '',
-      creationDate: moment(Date.now()).format("DD-MMM-YYYY"),
-      shippingEmail: '',
-      requestedphoneNumber: '',
-      shippingType: '',
-      tracking: '',
-      orgId: '',
-      orgValue: '',
-      shipToId: '',
-      toRadId: '',
-      fromSiteValue: { org_value: "", org_id: "" },
-      fromSiteTextValue: '',
-      shipFromSite: [],
-      shipFromAddresses: [],
-      shipmentMethods: [],
-      rowIndex: -1,
-      columnIndex: -1,
-      shippingMethod: { shipping_method_code: "", shipping_method: "" },
-      shipFromAddressValue: { ship_from_org_value: "", ship_from_org_id: "" },
-      openBackdrop: false,
-      openSnackbar: false,
-      alertMsg: '',
-      return_request_number: ''
-  })
+    toRad: "",
+    shipTo: "",
+    typeValue: "Return",
+    reasonValue: "",
+    commentValue: "",
+    status: "New",
+    createdBy: props.userName.toUpperCase(),
+    returnReqValue: "",
+    creationDate: moment(Date.now()).format("DD-MMM-YYYY"),
+    shippingEmail: "",
+    requestedphoneNumber: "",
+    shippingType: "",
+    tracking: "",
+    orgId: "",
+    orgValue: "",
+    shipToId: "",
+    toRadId: "",
+    fromSiteValue: { org_value: "", org_id: "" },
+    fromSiteTextValue: "",
+    shipFromSite: [],
+    shipFromAddresses: [],
+    shipmentMethods: [],
+    rowIndex: -1,
+    columnIndex: -1,
+    shippingMethod: { shipping_method_code: "", shipping_method: "" },
+    shipFromAddressValue: { ship_from_org_value: "", ship_from_org_id: "" },
+    openBackdrop: false,
+    openStatusBackdrop: false,
+    openSnackbar: false,
+    alertMsg: "",
+    return_request_number: "",
+    barCodeData: "",
+    showBarCodeComponent: false,
+    openBarCodeDialog: false,
+  });
 
-  const equipment_rad_ref = React.useRef()
+  const equipment_rad_ref = React.useRef();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -94,6 +104,11 @@ const ReturnForm = (props) => {
   };
 
   const handleAddNewLine = () => {
+    setState((prevState) => ({
+      ...prevState,
+      barCodeData: "",
+    }));
+
     setLineData((oldRecord) => [
       { serial_number: "", asset_number: "", comments: "" },
       ...oldRecord,
@@ -154,20 +169,20 @@ const ReturnForm = (props) => {
           userName: props.userName.toUpperCase(),
         }
       );
-      let response = submitted_data.data.submitted_data
-      console.log('submitted_data', submitted_data)
+      let response = submitted_data.data.submitted_data;
+      console.log("submitted_data", submitted_data);
       setState((prevState) => ({
         ...prevState,
         openSnackbar: true,
         servityType: "success",
         alertMsg: "Your request is submitted",
         submitBtnClicked: true,
-        return_request_number: response.outBinds.p_req_number
+        return_request_number: response.outBinds.p_req_number,
       }));
     } catch (err) {
       console.log("error", err);
     }
-    equipment_rad_ref.current?.scrollIntoView({ behavior: 'smooth' })
+    equipment_rad_ref.current?.scrollIntoView({ behavior: "smooth" });
     setState((prevState) => ({
       ...prevState,
       openBackdrop: false,
@@ -177,14 +192,43 @@ const ReturnForm = (props) => {
   const handleOnCLickCancel = () => {
     console.log("state", state);
     console.log("lineData", lineData);
-    setState(prevState => ({
-        ...prevState,
-        openBackdrop: true
-    }))
+    setState((prevState) => ({
+      ...prevState,
+      openBackdrop: true,
+    }));
     setTimeout(() => {
-        navigate('/list')
-    }, 2000)
+      navigate("/list");
+    }, 2000);
   };
+
+  const handleCloseDialog = () => {
+    setState((prevState) => ({
+      ...prevState,
+      openBarCodeDialog: false,
+      showBarCodeComponent: false,
+    }));
+  };
+
+  const onUpdateScreen = (err, result) => {
+    if (result) {
+      setState((prevState) => ({
+        ...prevState,
+        barCodeData: result.text,
+        showBarCodeComponent: false,
+        openBarCodeDialog: false,
+      }));
+      handleSerialChange(state.rowIndex, "serial_number", result.text);
+    }
+  };
+
+  React.useEffect(() => {
+    if (state.openBarCodeDialog === true) {
+      setState((prevState) => ({
+        ...prevState,
+        showBarCodeComponent: true,
+      }));
+    }
+  }, [state.openBarCodeDialog]);
 
   const handleOnClickSave = async () => {
     setState((prevState) => ({
@@ -267,7 +311,7 @@ const ReturnForm = (props) => {
         typeValue: state.typeValue,
         reasonValue: state.reasonValue,
         commentValue: state.commentValue,
-        status: 'Draft',
+        status: "Draft",
         createdBy: props.userId,
         creationDate: state.creationDate,
         shippingMethod: state.shippingMethod,
@@ -281,7 +325,7 @@ const ReturnForm = (props) => {
         lines: lineData,
       }
     );
-    equipment_rad_ref.current?.scrollIntoView({ behavior: 'smooth' })
+    equipment_rad_ref.current?.scrollIntoView({ behavior: "smooth" });
     setState((prevState) => ({
       ...prevState,
       returnReqValue: headers_data.data.curr_val_header[0][0],
@@ -290,7 +334,7 @@ const ReturnForm = (props) => {
       alertMsg: "Your request is saved",
       openSnackbar: true,
       saveBtnClicked: true,
-      status: 'Draft'
+      status: "Draft",
     }));
   };
 
@@ -369,38 +413,78 @@ const ReturnForm = (props) => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-        if (state.return_request_number !== '' && state.return_request_number !== null) {
-          setState(prevState => ({
-            ...prevState,
-            openBackdrop: true
-          }))
-          try {
-            const response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/retryForStatus', {
-              header_id: state.returnReqValue
-            });
-            setState(prevState => ({
-              ...prevState,
-              status: response.data.submit_status
-            }));
-            if (response.data.submit_status === 'Approved') {
-              setState(prevState => ({
-                ...prevState,
-                openBackdrop: false
-              }))
-              clearInterval(intervalId);
+      if (
+        state.return_request_number !== "" &&
+        state.return_request_number !== null
+      ) {
+        setState((prevState) => ({
+          ...prevState,
+          openStatusBackdrop: true,
+        }));
+        try {
+          const response = await axios.post(
+            "https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/retryForStatus",
+            {
+              header_id: state.returnReqValue,
             }
-          } catch (err) {
-            console.log('error retrying for request number', err);
+          );
+          setState((prevState) => ({
+            ...prevState,
+            status: response.data.submit_status,
+          }));
+          if (response.data.submit_status === "Approved") {
+            setState((prevState) => ({
+              ...prevState,
+              openStatusBackdrop: false,
+            }));
+            clearInterval(intervalId);
           }
+        } catch (err) {
+          console.log("error retrying for request number", err);
         }
-      };
-      fetchData();
-      const intervalId = setInterval(fetchData, 5000);
-      return () => clearInterval(intervalId);
-  }, [state.return_request_number])
+      }
+    };
+    fetchData();
+    const intervalId = setInterval(fetchData, 5000);
+    return () => clearInterval(intervalId);
+  }, [state.return_request_number]);
 
   return (
-    <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
+    <Box
+      sx={{
+        width: "100vw",
+        height: "100vh",
+        overflowX: "hidden",
+
+        "&::-webkit-scrollbar": {
+          height: "5px",
+          width: "3px",
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "var(--secondary-grey-300, #F4F7FE)",
+          borderRadius: "10px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#39B8FF",
+          borderRadius: "10px",
+        },
+      }}
+    >
+      <Dialog onClose={handleCloseDialog} open={state.showBarCodeComponent}>
+        <DialogTitle>Scan BarCode</DialogTitle>
+        <DialogContent>
+          {state.showBarCodeComponent && (
+            <BarcodeScannerComponent
+              width={400}
+              height={400}
+              onUpdate={(err, result) => onUpdateScreen(err, result)}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
       <Backdrop
         sx={{
           zIndex: 100,
@@ -431,53 +515,45 @@ const ReturnForm = (props) => {
         sx={{
           height: "25%",
           width: "100%",
-          paddingTop: '1%',
-          backgroundImage: 'url(/assets/header_bg.png)',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat'
+          paddingTop: "1%",
+          backgroundImage: "url(/assets/header_bg.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <Stack direction='row' justifyContent='space-between' padding='1%'>
-            <Typography
-                fontFamily="Gilroy"
-                fontWeight={"600"}
-                color="white"
-                fontSize='1.5rem'
-                ref={equipment_rad_ref}
-            >
-                Equipments Return to RAD
+        <Stack direction="row" justifyContent="space-between" padding="1%">
+          <Typography
+            fontFamily="Gilroy"
+            fontWeight={"600"}
+            color="white"
+            fontSize="1.5rem"
+            ref={equipment_rad_ref}
+          >
+            Equipments Return to RAD
+          </Typography>
+          <Stack direction="row">
+            <Typography fontFamily="Gilroy" fontWeight="600" color="white">
+              Oracle Job :
             </Typography>
-            <Stack direction='row'>
-                <Typography
-                    fontFamily="Gilroy"
-                    fontWeight="600"
-                    color="white"
-                >
-                    Oracle Job : 
-                </Typography>
-                <Typography
-                    fontFamily="Gilroy"
-                    fontWeight="600"
-                    color="white"  
-                    width='100px'
-                >
-                    {state.return_request_number}
-                </Typography>
-            </Stack>
+            <Typography
+              fontFamily="Gilroy"
+              fontWeight="600"
+              color="white"
+              width="100px"
+            >
+              {state.return_request_number}
+            </Typography>
+          </Stack>
         </Stack>
         <Stack
           direction="row"
           alignItems="center"
-          width="20%"
+          width="25%"
           justifyContent="space-around"
-          padding='1%'
-          marginTop='1%'
+          padding="1%"
+          marginTop="1%"
         >
-          <Typography
-            fontFamily="Gilroy"
-            fontWeight="600"
-            color="white"
-          >
+          <Typography fontFamily="Gilroy" fontWeight="600" color="white">
             Request # : {state.returnReqValue}
           </Typography>
           <Box
@@ -489,12 +565,16 @@ const ReturnForm = (props) => {
               justifyContent: "center",
               alignItems: "center",
               width: "100px",
+              position: "relative",
             }}
           >
             <Typography fontFamily="Gilroy" color="#131921" fontWeight="1000">
               {state.status}
             </Typography>
           </Box>
+          {state.openStatusBackdrop && (
+            <CircularProgress size="1.5rem" sx={{ color: "#ffffff" }} />
+          )}
         </Stack>
       </Box>
       <Stack
@@ -557,6 +637,7 @@ const ReturnForm = (props) => {
                     required={true}
                     InputLabelProps={{ style: { color: "black" } }}
                     placeholder="From(Site/Dept)"
+                    label="From(Site/Dept)"
                     value={state.fromSiteTextValue}
                     name="fromSiteTextValue"
                     onChange={(e) => handleChange(e)}
@@ -609,7 +690,8 @@ const ReturnForm = (props) => {
                     }}
                     required={true}
                     InputLabelProps={{ style: { color: "black" } }}
-                    placeholder="To(Site/Dept)"
+                    placeholder="Ship from Address"
+                    label="Ship from Address"
                   />
                 )}
               />
@@ -862,8 +944,15 @@ const ReturnForm = (props) => {
                       variant="outlined"
                       InputProps={{
                         ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {" "}
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
                         disableUnderline: true,
                       }}
+                      label="Shipping Method"
                       required={true}
                       placeholder="Shipping Method"
                     />
@@ -873,9 +962,11 @@ const ReturnForm = (props) => {
               <Grid item xs={4}>
                 <TextField
                   disabled={state.submitBtnClicked}
-                  placeholder="Tracking"
+                  placeholder="Tracking#"
+                  label="Tracking#"
                   variant="outlined"
                   size="small"
+                  required={true}
                   value={state.tracking}
                   name="tracking"
                   onChange={(e) => handleChange(e)}
@@ -1071,11 +1162,28 @@ const ReturnForm = (props) => {
                           {state.rowIndex === index &&
                           state.columnIndex === 0 ? (
                             <TextField
-                              defaultValue={row.serial_number}
+                              defaultValue={state.barCodeData}
                               disabled={state.submitBtnClicked}
+                              value={row.serial_number}
                               focused
                               autoFocus
                               fullWidth
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      onClick={() => {
+                                        setState((prevState) => ({
+                                          ...prevState,
+                                          openBarCodeDialog: true,
+                                        }));
+                                      }}
+                                    >
+                                      <CameraAltTwoToneIcon />
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
                               onChange={(event) =>
                                 handleSerialChange(
                                   index,

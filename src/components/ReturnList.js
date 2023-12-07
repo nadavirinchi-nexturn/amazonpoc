@@ -30,8 +30,7 @@ const styles = {
     backgroundSize: "cover",
   },
   testContainer: {
-    // backgroundColor: "#ffffff",
-    width: "100px",
+    width: "150px",
     height: "50px",
     marginLeft: "15px",
     backgroundImage: `url(${"/assets/logo-wide.png"})`,
@@ -67,6 +66,7 @@ const ReturnList = (props) => {
           alignItems="center"
           justifyContent="flex-start"
           m={2}
+          left={"30px"}
         >
           <Typography
             fontFamily="Gilroy"
@@ -97,7 +97,6 @@ const ReturnList = (props) => {
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          // padding="1%"
           marginLeft={4}
           marginBottom={2}
         >
@@ -112,15 +111,10 @@ const ReturnList = (props) => {
         </Stack>
         <Grid
           container
-          // m={1}
+          marginLeft="20px"
+          width={"95%"}
           spacing={1}
-          // marginLeft={1}
-          // marginRight={2}
-          // gap={1}
-          // rowSpacing={2}
-          // sx={{ border: "1px solid red" }}
           alignItems={"center"}
-          // justifyContent={"center"}
           xs={12}
         >
           <Grid item xs={3}>
@@ -218,7 +212,6 @@ const ReturnList = (props) => {
                   borderColor: "#FFBB5C",
                 },
                 marginLeft: "auto",
-                // marginRight: "5px",
               }}
             />
           </Grid>
@@ -302,16 +295,10 @@ const ReturnList = (props) => {
               <Badge
                 badgeContent={"0"}
                 sx={{
-                  // position: "sticky",
-                  // left: "65px",
-                  // top: "350px",
                   "& .MuiBadge-badge": {
                     color: "#2C67FF",
                     backgroundColor: "#E6EEFF",
                     transform: "translate(50px, 2px)",
-                    // marginTop: "12px",
-                    // marginLeft: "-px",
-                    // marginRight: "auto",
                   },
                 }}
                 color="primary"
@@ -339,9 +326,6 @@ const ReturnList = (props) => {
               <Badge
                 badgeContent={"0"}
                 sx={{
-                  // position: "absolute",
-                  // left: 200,
-                  // top: 306,
                   "& .MuiBadge-badge": {
                     color: "#2C67FF",
                     backgroundColor: "#E6EEFF",
@@ -355,7 +339,7 @@ const ReturnList = (props) => {
           <Chip
             sx={{
               display: "flex",
-              width: "105px",
+              width: "120px",
               alignItems: "center",
               justifyContent: "flex-start",
               backgroundColor: "#ffffff",
@@ -367,22 +351,18 @@ const ReturnList = (props) => {
               fontSize: 15,
               fontWeight: 550,
             }}
-            label="Draft"
+            label="Repair"
             variant="outlined"
             avatar={
               <Badge
                 badgeContent={"0"}
                 sx={{
-                  // position: "absolute",
-                  // left: 330,
-                  // top: 306,
                   "& .MuiBadge-badge": {
                     color: "#2C67FF",
                     backgroundColor: "#E6EEFF",
-                    transform: "translate(70px, 2px)",
+                    transform: "translate(85px, 2px)",
                   },
                 }}
-                // color=""
               ></Badge>
             }
           ></Chip>
@@ -393,7 +373,7 @@ const ReturnList = (props) => {
           border: "1px solid #FFFFFF",
           marginLeft: "30px",
           marginRight: "30px",
-          marginTop: "-40px",
+          marginTop: "-30px",
           marginBottom: "30px",
           minHeight: "150px",
           backgroundColor: "#FFFFFF",
@@ -402,12 +382,10 @@ const ReturnList = (props) => {
         <Box
           className="table-container"
           sx={{
-            // border: "2px solid red",
             marginLeft: "30px",
             marginRight: "30px",
             marginTop: "10px",
             marginBottom: "30px",
-            // backgroundColor: "green",
           }}
         >
           <TableContainer component={Paper} sx={{ height: "100px" }}>
