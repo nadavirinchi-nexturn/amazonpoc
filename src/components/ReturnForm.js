@@ -47,41 +47,43 @@ function SlideTransition(props) {
 
 const ReturnForm = (props) => {
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    const [lineData, setLineData] = React.useState([])
-    const [state, setState] = React.useState({
-        toRad: '',
-        shipTo: '',
-        typeValue: 'Return',
-        reasonValue: '',
-        commentValue: '',
-        status: 'New',
-        createdBy: props.userName.toUpperCase(),
-        returnReqValue: '',
-        creationDate: moment(Date.now()).format("DD-MMM-YYYY"),
-        shippingEmail: '',
-        requestedphoneNumber: '',
-        shippingType: '',
-        tracking: '',
-        orgId: '',
-        orgValue: '',
-        shipToId: '',
-        toRadId: '',
-        fromSiteValue: { org_value: "", org_id: "" },
-        fromSiteTextValue: '',
-        shipFromSite: [],
-        shipFromAddresses: [],
-        shipmentMethods: [],
-        rowIndex: -1,
-        columnIndex: -1,
-        shippingMethod: { shipping_method_code: "", shipping_method: "" },
-        shipFromAddressValue: { ship_from_org_value: "", ship_from_org_id: "" },
-        openBackdrop: false,
-        openSnackbar: false,
-        alertMsg: '',
-        return_request_number: ''
-    })
+  const [lineData, setLineData] = React.useState([])
+  const [state, setState] = React.useState({
+      toRad: '',
+      shipTo: '',
+      typeValue: 'Return',
+      reasonValue: '',
+      commentValue: '',
+      status: 'New',
+      createdBy: props.userName.toUpperCase(),
+      returnReqValue: '',
+      creationDate: moment(Date.now()).format("DD-MMM-YYYY"),
+      shippingEmail: '',
+      requestedphoneNumber: '',
+      shippingType: '',
+      tracking: '',
+      orgId: '',
+      orgValue: '',
+      shipToId: '',
+      toRadId: '',
+      fromSiteValue: { org_value: "", org_id: "" },
+      fromSiteTextValue: '',
+      shipFromSite: [],
+      shipFromAddresses: [],
+      shipmentMethods: [],
+      rowIndex: -1,
+      columnIndex: -1,
+      shippingMethod: { shipping_method_code: "", shipping_method: "" },
+      shipFromAddressValue: { ship_from_org_value: "", ship_from_org_id: "" },
+      openBackdrop: false,
+      openSnackbar: false,
+      alertMsg: '',
+      return_request_number: ''
+  })
+
+  const equipment_rad_ref = React.useRef()
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -165,7 +167,7 @@ const ReturnForm = (props) => {
     } catch (err) {
       console.log("error", err);
     }
-    window.scrollTo(0, 0)
+    equipment_rad_ref.current?.scrollIntoView({ behavior: 'smooth' })
     setState((prevState) => ({
       ...prevState,
       openBackdrop: false,
@@ -254,7 +256,7 @@ const ReturnForm = (props) => {
     }));
 
     let headers_data = await axios.post(
-      "http://localhost:3000/amazonpoc/returns/saveHeaders",
+      "https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/saveHeaders",
       {
         fromSiteValue: state.fromSiteValue,
         shipFromAddressValue: state.shipFromAddressValue,
@@ -279,7 +281,7 @@ const ReturnForm = (props) => {
         lines: lineData,
       }
     );
-    window.scrollTo(0, 0)
+    equipment_rad_ref.current?.scrollIntoView({ behavior: 'smooth' })
     setState((prevState) => ({
       ...prevState,
       returnReqValue: headers_data.data.curr_val_header[0][0],
@@ -367,7 +369,11 @@ const ReturnForm = (props) => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-        if (state.return_request_number !== '') {
+        if (state.return_request_number !== '' && state.return_request_number !== null) {
+          setState(prevState => ({
+            ...prevState,
+            openBackdrop: true
+          }))
           try {
             const response = await axios.post('https://fzafkcdsd7.execute-api.us-east-1.amazonaws.com/dev/amazonpoc/returns/retryForStatus', {
               header_id: state.returnReqValue
@@ -376,7 +382,11 @@ const ReturnForm = (props) => {
               ...prevState,
               status: response.data.submit_status
             }));
-            if (response.data.submit_status === 'approved') {
+            if (response.data.submit_status === 'Approved') {
+              setState(prevState => ({
+                ...prevState,
+                openBackdrop: false
+              }))
               clearInterval(intervalId);
             }
           } catch (err) {
@@ -419,9 +429,12 @@ const ReturnForm = (props) => {
       </Snackbar>
       <Box
         sx={{
-          height: "20%",
+          height: "25%",
           width: "100%",
-          background: "#131921",
+          paddingTop: '1%',
+          backgroundImage: 'url(/assets/header_bg.png)',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
         }}
       >
         <Stack direction='row' justifyContent='space-between' padding='1%'>
@@ -429,21 +442,22 @@ const ReturnForm = (props) => {
                 fontFamily="Gilroy"
                 fontWeight={"600"}
                 color="white"
-                fontSize='2rem'
+                fontSize='1.5rem'
+                ref={equipment_rad_ref}
             >
                 Equipments Return to RAD
             </Typography>
             <Stack direction='row'>
                 <Typography
                     fontFamily="Gilroy"
-                    fontWeight={"600"}
+                    fontWeight="600"
                     color="white"
                 >
-                    Oracle Job: 
+                    Oracle Job : 
                 </Typography>
                 <Typography
                     fontFamily="Gilroy"
-                    fontWeight={"600"}
+                    fontWeight="600"
                     color="white"  
                     width='100px'
                 >
@@ -452,15 +466,16 @@ const ReturnForm = (props) => {
             </Stack>
         </Stack>
         <Stack
-          direction={"row"}
+          direction="row"
           alignItems="center"
-          width="25%"
-          justifyContent="space-between"
+          width="20%"
+          justifyContent="space-around"
           padding='1%'
+          marginTop='1%'
         >
           <Typography
             fontFamily="Gilroy"
-            fontWeight={"600"}
+            fontWeight="600"
             color="white"
           >
             Request # : {state.returnReqValue}
