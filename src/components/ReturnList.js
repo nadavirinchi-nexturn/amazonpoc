@@ -7,6 +7,7 @@ import {
   Typography,
   Chip,
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Badge from "@mui/material/Badge";
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,27 +20,41 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 
+const styles = {
+  returnListContainer: {
+    height: "360px",
+    width: "100%",
+    paddingTop: "1%",
+    backgroundImage: `url(${"/assets/version_2_bg.png"})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+  },
+  testContainer: {
+    // backgroundColor: "#ffffff",
+    width: "100px",
+    height: "50px",
+    marginLeft: "15px",
+    backgroundImage: `url(${"/assets/logo-wide.png"})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+  },
+};
+
 const ReturnList = (props) => {
   const navigate = useNavigate();
 
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
-      <Box
-        sx={{
-          height: "50%",
-          background: "#131921",
-          width: "100%",
-          paddingTop: "1%",
-        }}
-      >
+      <Box sx={styles.returnListContainer}>
         <Stack
           direction={"row"}
           alignItems={"center"}
-          justifyContent={"flex-end"}
+          justifyContent={"flex-start"}
           marginBottom={2}
         >
+          <Box sx={styles.testContainer}></Box>
           <Typography
-            sx={{ marginRight: "30px" }}
+            sx={{ marginRight: "30px", marginLeft: "auto" }}
             fontFamily="Gilroy"
             color="white"
             fontWeight="1000"
@@ -53,13 +68,18 @@ const ReturnList = (props) => {
           justifyContent="flex-start"
           m={2}
         >
-          <Typography fontFamily="Gilroy" color="white" fontWeight="1000">
-            Returns RAD
+          <Typography
+            fontFamily="Gilroy"
+            color="white"
+            fontWeight="600"
+            fontSize="1.5rem"
+          >
+            Equipment Returns to RAD
           </Typography>
           <Button
             sx={{
               marginLeft: "auto",
-              background: "#FFBB5C",
+              background: "#FFD914",
               textTransform: "none",
               "&:hover": {
                 background: "#FFBB5C",
@@ -81,116 +101,147 @@ const ReturnList = (props) => {
           marginLeft={4}
           marginBottom={2}
         >
-          <Typography fontFamily="Gilroy" color="white">
+          <Typography
+            fontFamily="Gilroy"
+            color="white"
+            fontWeight="600"
+            fontSize="1.2rem"
+          >
             Return List
           </Typography>
         </Stack>
-        <Stack
-          direction={"row"}
+        <Grid
+          container
+          // m={1}
+          spacing={1}
+          // marginLeft={1}
+          // marginRight={2}
+          // gap={1}
+          // rowSpacing={2}
+          // sx={{ border: "1px solid red" }}
           alignItems={"center"}
-          justifyContent={"space-between"}
-          marginLeft={4}
-          marginRight={4}
+          // justifyContent={"center"}
+          xs={12}
         >
-          <TextField
-            placeholder="Request Number"
-            variant="outlined"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  {" "}
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              backgroundColor: "#ffffff",
-              borderRadius: "5px",
-              "&.Mui-focused .MuiOutlinedInput-root": {
-                paddingRight: "10px!important",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#FFBB5C",
-              },
-            }}
-          />
-          <TextField
-            placeholder="From Date"
-            variant="outlined"
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  {" "}
-                  <CalendarMonthIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              backgroundColor: "#ffffff",
-              borderRadius: "5px",
-              "&.Mui-focused .MuiOutlinedInput-root": {
-                paddingRight: "10px!important",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#FFBB5C",
-              },
-            }}
-          />
-          <TextField
-            placeholder="To Date"
-            variant="outlined"
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  {" "}
-                  <CalendarMonthIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              backgroundColor: "#ffffff",
-              borderRadius: "5px",
-              "&.Mui-focused .MuiOutlinedInput-root": {
-                paddingRight: "10px!important",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#FFBB5C",
-              },
-            }}
-          />
-          <TextField
-            placeholder="Created by"
-            variant="outlined"
-            size="small"
-            sx={{
-              backgroundColor: "#ffffff",
-              borderRadius: "5px",
-              "&.Mui-focused .MuiOutlinedInput-root": {
-                paddingRight: "10px!important",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#FFBB5C",
-              },
-            }}
-          />
-          <Button
-            sx={{
-              background: "#FFBB5C",
-              textTransform: "none",
-              color: "#131921",
-              "&:hover": {
+          <Grid item xs={3}>
+            <TextField
+              placeholder="Request Number"
+              variant="outlined"
+              fullWidth
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {" "}
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                backgroundColor: "#ffffff",
+                borderRadius: "5px",
+                "&.Mui-focused .MuiOutlinedInput-root": {
+                  paddingRight: "10px!important",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#FFBB5C",
+                },
+                marginLeft: "5px",
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              placeholder="From Date"
+              variant="outlined"
+              fullWidth
+              size="small"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {" "}
+                    <CalendarMonthIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                backgroundColor: "#ffffff",
+                borderRadius: "5px",
+                "&.Mui-focused .MuiOutlinedInput-root": {
+                  paddingRight: "10px!important",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#FFBB5C",
+                },
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              placeholder="To Date"
+              variant="outlined"
+              size="small"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {" "}
+                    <CalendarMonthIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                backgroundColor: "#ffffff",
+                borderRadius: "5px",
+                "&.Mui-focused .MuiOutlinedInput-root": {
+                  paddingRight: "10px!important",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#FFBB5C",
+                },
+              }}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              placeholder="Created by"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={{
+                backgroundColor: "#ffffff",
+                borderRadius: "5px",
+                "&.Mui-focused .MuiOutlinedInput-root": {
+                  paddingRight: "10px!important",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#FFBB5C",
+                },
+                marginLeft: "auto",
+                // marginRight: "5px",
+              }}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <Button
+              fullWidth
+              sx={{
                 background: "#FFBB5C",
-              },
-              height: "40px",
-              width: "100px",
-            }}
-          >
-            Search
-          </Button>
-        </Stack>
+                textTransform: "none",
+                color: "#131921",
+                "&:hover": {
+                  background: "#FFBB5C",
+                },
+                height: "40px",
+                width: "100px",
+                marginLeft: "1px",
+                marginRight: "1px",
+              }}
+            >
+              Search
+            </Button>
+          </Grid>
+        </Grid>
         <Stack
           direction="row"
           alignItems="center"
@@ -198,7 +249,7 @@ const ReturnList = (props) => {
           left="30px"
           sx={{
             background: "white",
-            marginTop: "10px",
+            marginTop: "25px",
             marginLeft: "30px",
             marginRight: "30px",
             borderRadius: "5px",
@@ -251,12 +302,50 @@ const ReturnList = (props) => {
               <Badge
                 badgeContent={"0"}
                 sx={{
-                  position: "absolute",
-                  left: 65,
-                  top: 265,
+                  // position: "sticky",
+                  // left: "65px",
+                  // top: "350px",
                   "& .MuiBadge-badge": {
                     color: "#2C67FF",
                     backgroundColor: "#E6EEFF",
+                    transform: "translate(50px, 2px)",
+                    // marginTop: "12px",
+                    // marginLeft: "-px",
+                    // marginRight: "auto",
+                  },
+                }}
+                color="primary"
+              ></Badge>
+            }
+          ></Chip>
+          <Chip
+            sx={{
+              display: "flex",
+              width: "115px",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              backgroundColor: "#ffffff",
+              marginLeft: "30px",
+              marginTop: "10px",
+              border: "0px",
+              color: "#243448",
+              fontFamily: "Poppins",
+              fontSize: 15,
+              fontWeight: 550,
+            }}
+            label="Return"
+            variant="outlined"
+            avatar={
+              <Badge
+                badgeContent={"0"}
+                sx={{
+                  // position: "absolute",
+                  // left: 200,
+                  // top: 306,
+                  "& .MuiBadge-badge": {
+                    color: "#2C67FF",
+                    backgroundColor: "#E6EEFF",
+                    transform: "translate(80px, 2px)",
                   },
                 }}
                 color="primary"
@@ -278,51 +367,19 @@ const ReturnList = (props) => {
               fontSize: 15,
               fontWeight: 550,
             }}
-            label="Return"
-            variant="outlined"
-            avatar={
-              <Badge
-                badgeContent={"0"}
-                sx={{
-                  position: "absolute",
-                  left: 200,
-                  top: 265,
-                  "& .MuiBadge-badge": {
-                    color: "#2C67FF",
-                    backgroundColor: "#E6EEFF",
-                  },
-                }}
-                color="primary"
-              ></Badge>
-            }
-          ></Chip>
-          <Chip
-            sx={{
-              display: "flex",
-              width: "95px",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              backgroundColor: "#ffffff",
-              marginLeft: "30px",
-              marginTop: "10px",
-              border: "0px",
-              color: "#243448",
-              fontFamily: "Poppins",
-              fontSize: 15,
-              fontWeight: 550,
-            }}
             label="Draft"
             variant="outlined"
             avatar={
               <Badge
                 badgeContent={"0"}
                 sx={{
-                  position: "absolute",
-                  left: 330,
-                  top: 265,
+                  // position: "absolute",
+                  // left: 330,
+                  // top: 306,
                   "& .MuiBadge-badge": {
                     color: "#2C67FF",
                     backgroundColor: "#E6EEFF",
+                    transform: "translate(70px, 2px)",
                   },
                 }}
                 // color=""
