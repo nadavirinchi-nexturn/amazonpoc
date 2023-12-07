@@ -14,7 +14,7 @@ const awsServerlessExpressMiddleware = require("aws-serverless-express/middlewar
 
 const oracledb = require("oracledb");
 
-oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
+// oracledb.initOracleClient({libDir:'C:\\instantclient_21_12'})
 
 const connectDB = async (req, res, next) => {
   try {
